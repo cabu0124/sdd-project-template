@@ -254,6 +254,7 @@ LICENSE                MIT — replace it in the repository you create
   config.yml           where the Spec Repository is — the only coupling
 .github/
   workflows/           pr-title.yml · release.yml — the delivery model, enforced
+                       spec-mirror.yml — the mirrors still match their hashes
 docs/
   commands/            the ten workflows, one file per command (incl. onboard)
   constitution.md      durable principles; read when a spec is silent

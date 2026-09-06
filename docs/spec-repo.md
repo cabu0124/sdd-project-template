@@ -111,7 +111,10 @@ anything:
   until the user decides.
 
 `/sdd-analyze` checks the same hashes, so a stale mirror surfaces at the quality
-gate even if nobody re-synced.
+gate even if nobody re-synced. And the `spec-mirror` job in
+`.github/workflows/spec-mirror.yml` recomputes them on every pull request, which
+is the backstop for the case neither command covers: nobody thought to run
+either one. Local drift cannot reach `develop`.
 
 ## Sibling development repositories
 
