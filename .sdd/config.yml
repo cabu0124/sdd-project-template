@@ -1,0 +1,36 @@
+# Where this repository's specs come from.
+#
+# Specs are owned by a Spec Repository — the product's source of truth for WHAT
+# and WHY. This repository owns the HOW: plan.md, tasks.md and the code.
+# `/sdd-sync <SPEC-ID>` reads this file, copies the spec in verbatim, and writes
+# its provenance to docs/specs/<NNN-slug>/spec.link.yml.
+#
+# Fill <...>. See docs/spec-repo.md.
+# No Spec Repository? Set `spec_repo: none` and this repo writes its own specs
+# with /sdd-specify, exactly like a single-repo project.
+
+spec_repo:
+  # Short name used in reports and in spec.link.yml. Free text.
+  name: <spec-repo>
+
+  # Working copy on this machine, absolute or relative to this repository.
+  # Tried first: it needs no network and shows uncommitted work.
+  # Leave empty to always go through `remote`.
+  path: <../spec-repo>
+
+  # Fallback when `path` is missing. Anything `git` can clone or fetch:
+  # an SSH or HTTPS URL, or another local path.
+  remote: <git@host:org/spec-repo.git>
+
+  # The ref to read. A branch tracks the specs as they are approved; a tag
+  # pins this repository to a reviewed set. See docs/spec-repo.md.
+  ref: main
+
+  # Directory inside the Spec Repository holding one directory per spec.
+  specs_dir: specs
+
+  # Files to copy into docs/specs/<NNN-slug>/ when they exist in the source.
+  # Everything else stays in the Spec Repository.
+  mirror:
+    - spec.md
+    - wireframe.html
