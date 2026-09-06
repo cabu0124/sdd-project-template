@@ -37,7 +37,8 @@ identical either way. Full rules in [`docs/spec-repo.md`](docs/spec-repo.md).
 [Layout](#layout) · [Any agent](#any-agent) ·
 [Coming from another spec system](#coming-from-another-spec-system) ·
 [Wireframes](#wireframes) · [One US, several repos](#one-us-several-repos) ·
-[Why `AGENTS.md` stays under 60 lines](#why-agentsmd-stays-under-60-lines)
+[Why `AGENTS.md` stays under 60 lines](#why-agentsmd-stays-under-60-lines) ·
+[License](#license)
 
 ---
 
@@ -247,6 +248,7 @@ workflows and the repository settings they assume — in `docs/delivery.md`.
 ```text
 AGENTS.md              source of truth — the only file loaded every session
 README.md              this file — /sdd-init replaces it with your project's own
+LICENSE                MIT — replace it in the repository you create
 .gitignore             keeps the per-developer agent files out of version control
 .sdd/
   config.yml           where the Spec Repository is — the only coupling
@@ -388,3 +390,10 @@ When the file grows past ~60 lines, that is the signal something in it belongs i
 The adapters make that stricter, not looser. Whatever sits in `AGENTS.md` is paid
 for in every tool, on every turn — and each adapter repeats the `Rule 1` block
 verbatim, so the budget is the same 60 lines, enforced harder.
+
+## License
+
+MIT — see [`LICENSE`](LICENSE). Copy it, change it, ship it.
+
+A repository created from this template inherits the file. Replace it with your
+own: the licence of what you build is your decision, not this template's.
