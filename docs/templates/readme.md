@@ -4,6 +4,13 @@
      a plausible command nobody has run is worse than a missing section.
      Delete this comment when you are done. -->
 
+<!-- Badges. Fill <org>/<repo> and delete the ones you do not want — a badge
+     pointing at the wrong repository is worse than no badge at all.
+[![CI](https://github.com/<org>/<repo>/actions/workflows/<workflow>.yml/badge.svg)](https://github.com/<org>/<repo>/actions)
+[![Latest release](https://img.shields.io/github/v/release/<org>/<repo>)](https://github.com/<org>/<repo>/releases)
+[![License](https://img.shields.io/badge/license-<licence>-blue.svg)](LICENSE)
+-->
+
 > <One line: what it is and who it is for. The same answer as `AGENTS.md` →
 > Project, written for a person who just landed on the repository.>
 
@@ -64,11 +71,16 @@ docs/specs/            one directory per feature — spec.md (mirrored) · plan.
 > is mirrored into `docs/specs/NNN-slug/` before any work starts. The agent stops
 > for approval **after the plan**.
 
-```text
-/sdd-sync → /sdd-plan → /sdd-tasks → /sdd-implement
-   WHAT        HOW         work         one task per run
-   (mirrored from the Spec Repository — /sdd-specify when this repo owns its specs)
+```mermaid
+flowchart LR
+  sync["<b>/sdd-sync</b><br>WHAT<br><i>mirrored from the Spec Repository</i>"]
+  plan["<b>/sdd-plan</b><br>HOW"]
+  tasks["<b>/sdd-tasks</b><br>work"]
+  impl["<b>/sdd-implement</b><br>one task per run"]
+  sync --> plan --> tasks --> impl
 ```
+
+<!-- Owns its specs instead? Replace /sdd-sync with /sdd-specify above. -->
 
 Trivial changes skip the spec; for a bug fix or a small tweak the agent asks
 first rather than assuming.
