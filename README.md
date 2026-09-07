@@ -1,5 +1,9 @@
 # SDD Project Template — a development repository
 
+[![License: MIT](https://img.shields.io/badge/license-MIT-blue.svg)](LICENSE)
+[![Latest release](https://img.shields.io/github/v/release/cabu0124/sdd-project-template?label=release)](https://github.com/cabu0124/sdd-project-template/releases)
+[![Use this template](https://img.shields.io/badge/use%20this-template-2ea44f)](https://github.com/cabu0124/sdd-project-template/generate)
+
 > **Rule #1 — Spec First:** no code without an approved spec.
 
 A starting point for a repository that **builds** the product: frontend,
@@ -10,13 +14,22 @@ Its specs come from a **Spec Repository** — the product's source of truth for
 WHAT and WHY, created from `sdd-spec-template` and shared by every repository
 that implements it. This one owns the HOW: `plan.md`, `tasks.md` and the code.
 
-```text
-Spec Repository        SPEC 001-password-reset      WHAT · WHY · approved
-        │
-        │ /sdd-sync 001-password-reset
-        ▼
-this repository        /sdd-plan → /sdd-tasks → /sdd-implement
-                       plan.md      tasks.md     code
+```mermaid
+flowchart TD
+  spec["<b>Spec Repository</b><br>SPEC 001-password-reset<br><i>WHAT · WHY · approved</i>"]
+  plan["<b>/sdd-plan</b><br>plan.md"]
+  tasks["<b>/sdd-tasks</b><br>tasks.md"]
+  impl["<b>/sdd-implement</b><br>code"]
+
+  spec -- "/sdd-sync 001-password-reset" --> plan
+  plan --> tasks --> impl
+
+  subgraph here [" this repository "]
+    direction LR
+    plan
+    tasks
+    impl
+  end
 ```
 
 A repository with no Spec Repository sets `spec_repo: none` in `.sdd/config.yml`
@@ -55,14 +68,25 @@ Four files per feature, each answering exactly one question:
 
 ## The loop
 
-```text
-setup        onboard ──────────── your agent tool's files      once per developer
-             /sdd-init ────────── AGENTS.md + .sdd/config.yml  once per repo
-─────────────────────────────────────────────────────────────────────────────
-per feature  /sdd-sync <id> ───── spec.md, mirrored  ← approved upstream
-             /sdd-plan ────────── plan.md            ← STOP, approval gate
-             /sdd-tasks ───────── tasks.md
-             /sdd-implement ───── code, one task per run
+```mermaid
+flowchart TD
+  subgraph setup [" setup "]
+    direction TB
+    onboard["<b>onboard</b><br>your agent tool's files<br><i>once per developer</i>"]
+    init["<b>/sdd-init</b><br>AGENTS.md + .sdd/config.yml<br><i>once per repo</i>"]
+    onboard --> init
+  end
+
+  subgraph feature [" per feature "]
+    direction TB
+    sync["<b>/sdd-sync id</b><br>spec.md, mirrored<br><i>approved upstream</i>"]
+    plan["<b>/sdd-plan</b><br>plan.md<br><i>STOP, approval gate</i>"]
+    tasks["<b>/sdd-tasks</b><br>tasks.md"]
+    impl["<b>/sdd-implement</b><br>code, one task per run"]
+    sync --> plan --> tasks --> impl
+  end
+
+  init --> sync
 ```
 
 `/sdd-specify` replaces `/sdd-sync` in a repository that owns its specs
@@ -72,7 +96,7 @@ Full sequence, optional steps included:
 
 | # | Command | What it does | Notes |
 | --- | --- | --- | --- |
-| 1 | `onboard` | Your agent tool's adapter and command files — follow `docs/commands/onboard.md`, there is no command yet | once per developer |
+| 1 | `onboard` | Your agent tool's adapter and command files — follow [`docs/commands/onboard.md`](docs/commands/onboard.md), there is no command yet | once per developer |
 | 2 | `/sdd-init new\|existing` | Fills `AGENTS.md` and `docs/constitution.md` | once per repo |
 | 3 | `/sdd-adopt <path>` | Carries a spec over from a previous system | optional · `spec_repo: none` |
 | 4 | `/sdd-sync <id>` | Mirrors a spec in from the Spec Repository | the usual entry point |
@@ -95,7 +119,7 @@ Full sequence, optional steps included:
 2. asks only what it cannot work out from them,
 3. writes its artifact, and stops.
 
-The workflows live in `docs/commands/`, one file per command, and that file is
+The workflows live in [`docs/commands/`](docs/commands/), one file per command, and that file is
 the whole definition — the per-tool command files are pointers into it, generated
 by `onboard`.
 
@@ -105,8 +129,8 @@ groups together in autocomplete.
 
 ## The Spec Repository
 
-One file couples this repository to the product's specs, and it names nothing but
-a repository, a ref and a directory:
+One file — [`.sdd/config.yml`](.sdd/config.yml) — couples this repository to the
+product's specs, and it names nothing but a repository, a ref and a directory:
 
 ```yaml
 # .sdd/config.yml
@@ -146,7 +170,7 @@ templates together, from writing the spec to shipping the code, in
 ## Bootstrap a new project
 
 1. **Copy this template** into the new repo.
-2. **Set up your agent tool.** Point it at `docs/commands/onboard.md` and follow
+2. **Set up your agent tool.** Point it at [`docs/commands/onboard.md`](docs/commands/onboard.md) and follow
    it. It asks which tools you use and generates their adapter and `sdd-*`
    command files — all `.gitignore`d. After this, `/sdd-init` and the rest work
    as slash commands. *Each developer does this once.*
@@ -163,7 +187,7 @@ templates together, from writing the spec to shipping the code, in
 
 <br>
 
-- **Onboarding** — `docs/commands/onboard.md` spells out every file to write.
+- **Onboarding** — [`docs/commands/onboard.md`](docs/commands/onboard.md) spells out every file to write.
 - **Init** — fill the `<...>` placeholders in **`AGENTS.md` only**, deleting the
   lines that don't apply.
 - Fill `.sdd/config.yml` with your Spec Repository, or set `spec_repo: none`.
@@ -215,9 +239,11 @@ Not every change is a feature:
 
 Two permanent branches, and nothing else:
 
-```text
-feature/007 ─┐
-fix/012 ─────┴─▶ develop ─▶ main ─▶ deploy ─▶ flag on
+```mermaid
+flowchart LR
+  f["feature/007"] --> d["<b>develop</b>"]
+  x["fix/012"] --> d
+  d --> m["<b>main</b>"] --> dep["deploy"] --> flag["flag on"]
 ```
 
 | Branch | Holds |
@@ -241,9 +267,13 @@ The flag is a `plan.md` decision and its removal is a task in `tasks.md`, the
 same way a mock written against a contract gets its own removal task.
 
 Full rules — the flag pattern, what keeps flags from becoming debt, the two
-workflows and the repository settings they assume — in `docs/delivery.md`.
+workflows and the repository settings they assume — in
+[`docs/delivery.md`](docs/delivery.md).
 
 ## Layout
+
+<details>
+<summary><b>The whole repository, file by file</b> — reference, not narrative.</summary>
 
 ```text
 AGENTS.md              source of truth — the only file loaded every session
@@ -276,6 +306,8 @@ docs/
 That is the whole repo. `onboard` adds, **outside version control**, the adapter
 your tool needs and its `sdd-*` command files.
 
+</details>
+
 Specs are numbered `NNN-slug`, zero-padded, **never reused**. The number is the
 permanent id you reference from commits, branches and issues —
 `feature/007-password-reset`, `feat(007): …`. See `docs/delivery.md`.
@@ -285,7 +317,7 @@ permanent id you reference from commits, branches and issues —
 Claude Code, Copilot, Antigravity, Cursor, Codex, Gemini CLI, Windsurf, Zed,
 Aider — the method does not care which one you use.
 
-**`AGENTS.md` is the source of truth.** The template ships nothing tool-specific:
+**[`AGENTS.md`](AGENTS.md) is the source of truth.** The template ships nothing tool-specific:
 most agents read `AGENTS.md` natively, and the four that need an adapter get a
 thin one that points at `AGENTS.md` and repeats only the `Rule 1 — Spec First`
 block.
@@ -360,11 +392,18 @@ why the spec lives in its own repository:
   part of the spec it takes.
 - **`tasks.md`** — only the tasks needed to implement it **here**.
 
-```text
-US-4417                             ← one spec, the same in all three
-├── web-app   007-password-reset   consumer
-├── api-svc   012-password-reset   OWNER      ← defines the contract
-└── infra     004-password-reset   consumer
+```mermaid
+flowchart TD
+  us["<b>US-4417</b><br><i>one spec, the same in all three</i>"]
+  api["<b>api-svc</b> 012-password-reset<br><b>OWNER</b> — defines the contract"]
+  web["<b>web-app</b> 007-password-reset<br>consumer"]
+  infra["<b>infra</b> 004-password-reset<br>consumer"]
+
+  us --> api
+  us --> web
+  us --> infra
+  api -- "contract, copied verbatim" --> web
+  api -- "contract, copied verbatim" --> infra
 ```
 
 Same US id and slug everywhere, local `NNN`, contract copied verbatim from the
