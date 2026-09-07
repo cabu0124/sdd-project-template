@@ -11,8 +11,9 @@ backend, API, service, worker, mobile, infrastructure. The structure is the same
 for all of them; only the placeholders change.
 
 Its specs come from a **Spec Repository** — the product's source of truth for
-WHAT and WHY, created from `sdd-spec-template` and shared by every repository
-that implements it. This one owns the HOW: `plan.md`, `tasks.md` and the code.
+WHAT and WHY, created from
+**[`sdd-spec-template`](https://github.com/cabu0124/sdd-spec-template)** and
+shared by every repository that implements it. This one owns the HOW: `plan.md`, `tasks.md` and the code.
 
 ```mermaid
 flowchart TD
@@ -129,8 +130,11 @@ groups together in autocomplete.
 
 ## The Spec Repository
 
-One file — [`.sdd/config.yml`](.sdd/config.yml) — couples this repository to the
-product's specs, and it names nothing but a repository, a ref and a directory:
+That repository is created from
+[`sdd-spec-template`](https://github.com/cabu0124/sdd-spec-template) — the
+counterpart to this one. One file — [`.sdd/config.yml`](.sdd/config.yml) —
+couples this repository to the product's specs, and it names nothing but a
+repository, a ref and a directory:
 
 ```yaml
 # .sdd/config.yml
