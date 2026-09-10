@@ -18,7 +18,8 @@ consume the same spec.
 | `tasks.md` | **here** | the ordered units of work, *here* |
 | the code | **here** | — |
 
-The line is the same one `docs/cross-repo.md` draws between sibling repos, moved
+The line is the same one `docs/cross-repo.md` (if present) draws between
+sibling repos, moved
 one step out: the spec is not narrowed per repo, and the split between repos is
 drawn in `plan.md` → `## Scope in this repo`. A plan or a task list in the Spec
 Repository is the failure mode this separation exists to prevent — it would make
@@ -57,7 +58,7 @@ report. Both are read with `git` at `ref`, never from a working tree, so two
 repositories syncing the same id get the same bytes.
 
 **`ref` is a policy choice.** A branch (`main`) tracks specs as they are
-approved — right for a team that moves together. A tag (`specs-v4`) pins this
+approved — right for a team that moves together. A tag (`v1.4.0`) pins this
 repository to a reviewed set and makes upgrading a deliberate act — right when
 the consumers are on different cadences. Either way `spec.link.yml` records the
 resolved commit, so what was built against is always recoverable.
@@ -68,7 +69,7 @@ a Spec Repository later is `/sdd-init` again, plus one `/sdd-sync` per spec.
 
 ## Ids
 
-Two numbers, one join key — the rule `docs/cross-repo.md` already sets:
+Two numbers, one join key — the rule `docs/cross-repo.md` (if present) already sets:
 
 | | Spec Repository | here |
 | --- | --- | --- |
@@ -154,4 +155,4 @@ stops it recurring.
 Contracts between consumers — endpoints, payloads, config keys — are technology,
 so they never enter the Spec Repository. They are owned by one development repo,
 defined in its `plan.md`, and copied verbatim into the consumers' plans. Full
-rules in `docs/cross-repo.md`.
+rules in `docs/cross-repo.md`, when the product spans repos.

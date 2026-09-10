@@ -72,7 +72,7 @@ has no tests.
 2. Ask, in one round where possible.
 3. Fill `AGENTS.md`: Project, Commands, Conventions, Boundaries, Done means.
    Delete every `<...>` you cannot fill; an unfilled placeholder is paid for on
-   every turn. Never touch the Rule 1 block, its `<!-- ssd:rule1:* -->`
+   every turn. Never touch the Rule 1 block, its `<!-- sdd:rule1:* -->`
    delimiters, or the "Read on demand" table. Keep the file at 60 lines or fewer.
    The `Interface` line is the one placeholder to fill rather than delete when it
    does not apply: `/sdd-specify` reads it, and `none` is an answer.
@@ -116,15 +116,17 @@ has no tests.
      `## Feature flags` — it holds whatever the branches look like.
    Never invent a deploy target. "Not decided yet" is an answer; a fictional
    pipeline is not.
-10. Delete the example spec that ships with the template, and any other spec
-    directory that is not this project's. Delete `docs/templates/readme.md` too —
+10. Delete any other spec directory that is not this project's. Delete
+    `docs/templates/readme.md` too —
     it is spent, the README is written. Delete `docs/example.md` too — it
     documents the two templates working together, not this project. With no user interface, delete
     `docs/templates/wireframe.html` as well — nothing will read it. Single-repo
     product: delete `docs/templates/cross-repo.md`, it was not needed. A repo
     whose specs come from a Spec Repository never writes one, so delete
     `docs/templates/spec.md` as well — the mirror is the only spec here.
-    `docs/delivery.md` is not a template — it stays, adapted in step 9.
+    `docs/delivery.md` is not a template — it stays, adapted in step 9. Replace
+    `LICENSE` with the licence of what you build — the template's is not a
+    default to keep.
     Delete `CHANGELOG.md` if it carries the template's own releases: a repository
     created from a template inherits it, and a project whose changelog opens with
     someone else's versions is lying from its first line. The first release here
@@ -136,9 +138,11 @@ has no tests.
 ## Writes
 
 `AGENTS.md`, `docs/constitution.md`, `README.md`, `.sdd/config.yml`,
-`docs/delivery.md`, and `docs/cross-repo.md` when the product spans repos. It deletes the inherited
-`CHANGELOG.md`, and `.github/workflows/` when the project is not on GitHub
-Actions. No source code,
+`docs/delivery.md`, and `docs/cross-repo.md` when the product spans repos. It
+deletes the inherited `CHANGELOG.md` and `LICENSE`'s template placeholder text,
+and `.github/workflows/pr-title.yml` and `release.yml` when the project is not
+on GitHub Actions — `spec-mirror.yml` stays even then, since it is the mirror's
+integrity check, not a delivery concern. No source code,
 no scaffolding, no first spec, no agent adapters, and no conversion of anyone
 else's specs.
 

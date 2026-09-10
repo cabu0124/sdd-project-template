@@ -5,7 +5,7 @@
 **Source of truth for every agent.** Tool adapters (`CLAUDE.md`, `GEMINI.md`, …) are generated
 per developer by `docs/commands/onboard.md`, only point here, and hold no project content.
 
-<!-- ssd:rule1:start -->
+<!-- sdd:rule1:start -->
 ## Rule 1 — Spec First
 
 No code without an approved spec. But first, classify the request:
@@ -17,7 +17,7 @@ No code without an approved spec. But first, classify the request:
 1. Find the spec in `docs/specs/` — WHAT the product does, independent of stack and repo. Not here yet: `/sdd-sync <id>` mirrors it from the Spec Repository named in `.sdd/config.yml`, or `/sdd-specify` writes it when none is configured. STOP for approval either way.
 2. Follow that spec's `plan.md` — HOW **this** repo implements it — and its `tasks.md`, the work to do **here** and nothing else. Missing? Create from templates, STOP for approval.
 3. Implement one task at a time, checking it off in `tasks.md`. Spec and code disagree → STOP and ask; never edit the spec to match the code — a mirrored spec is owned by the Spec Repository and is corrected there, for every repo.
-<!-- ssd:rule1:end -->
+<!-- sdd:rule1:end -->
 
 ## Project
 

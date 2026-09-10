@@ -1,6 +1,6 @@
 # Spec NNN — [feature name]
 
-- **Status:** draft <!-- draft | approved | done -->
+- **Status:** draft <!-- draft | review | approved | done | superseded -->
 - **Date:** YYYY-MM-DD
 - **US:** <id or link> <!-- shared across repos; delete if single-repo -->
 - **Repos:** <repo> · <repo> <!-- every repo implementing it; delete if single-repo -->
