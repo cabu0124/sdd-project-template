@@ -70,7 +70,7 @@ Nothing else. Everything here is mechanical once the id is known.
 4. Take the local `NNN`: the next free number in `docs/specs/`, zero-padded,
    never reused. Keep the source slug unchanged, so the story stays greppable
    across repositories — `007-password-reset` here may be `001-password-reset`
-   there, and that is fine. See `docs/cross-repo.md` for the id rules.
+   there, and that is fine. See `docs/cross-repo.md`, if present, for the id rules.
 5. Copy the files listed under `mirror` in the config, **byte for byte**, out of
    git rather than through you — `git -C <path> show <ref>:<specs_dir>/<id>/spec.md > docs/specs/<NNN-slug>/spec.md`.
    Content that passes through a reply is content that can be reflowed, and a

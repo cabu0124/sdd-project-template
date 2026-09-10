@@ -13,7 +13,7 @@ acceptance criteria are verified here. The rest name the repo that owns them —
 unnamed exclusion is how the same work gets built twice, or not at all.
 
 Delete this section when the spec is single-repo: everything in it is this repo's.
-See `docs/cross-repo.md`.>
+See `docs/cross-repo.md`, if present.>
 
 - **Here:** R1, R2 — AC1, AC2, AC4
 - **Elsewhere:** R3 — `<repo>` NNN <what it covers>
@@ -40,7 +40,7 @@ a plan can carry both:
   an input, not a decision: if it is wrong, incomplete or contradicted by
   reality, STOP and ask. Never adjust it locally.
 
-See `docs/cross-repo.md`.>
+See `docs/cross-repo.md`, if present.>
 
 ## Rollout
 

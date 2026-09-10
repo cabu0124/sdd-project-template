@@ -54,7 +54,7 @@ the spec stays whole.
 | Contract (endpoint, payload, event, config key) | copied verbatim | — |
 | `plan.md`, `tasks.md` | — | yes |
 
-The `US:` id is the join key. Numbers diverge between repos — `007-password-reset`
+The slug is the join key. Numbers diverge between repos — `007-password-reset`
 here may be `012-password-reset` there — and that is fine. The slug stays
 identical so the story is greppable across repos.
 

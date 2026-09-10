@@ -4,7 +4,7 @@
 [![Latest release](https://img.shields.io/github/v/release/cabu0124/sdd-project-template?label=release)](https://github.com/cabu0124/sdd-project-template/releases)
 [![Use this template](https://img.shields.io/badge/use%20this-template-2ea44f)](https://github.com/cabu0124/sdd-project-template/generate)
 
-> **Rule #1 — Spec First:** no code without an approved spec.
+> **Rule 1 — Spec First:** no code without an approved spec.
 
 A starting point for a repository that **builds** the product: frontend,
 backend, API, service, worker, mobile, infrastructure. The structure is the same
@@ -97,8 +97,8 @@ Full sequence, optional steps included:
 
 | # | Command | What it does | Notes |
 | --- | --- | --- | --- |
-| 1 | `onboard` | Your agent tool's adapter and command files — follow [`docs/commands/onboard.md`](docs/commands/onboard.md), there is no command yet | once per developer |
-| 2 | `/sdd-init new\|existing` | Fills `AGENTS.md` and `docs/constitution.md` | once per repo |
+| 1 | `onboard` | Your agent tool's adapter and command files — follow [`docs/commands/onboard.md`](docs/commands/onboard.md) | once per developer |
+| 2 | `/sdd-init new\|existing` | Fills `AGENTS.md`, `docs/constitution.md`, `README.md` and `.sdd/config.yml` | once per repo |
 | 3 | `/sdd-adopt <path>` | Carries a spec over from a previous system | optional · `spec_repo: none` |
 | 4 | `/sdd-sync <id>` | Mirrors a spec in from the Spec Repository | the usual entry point |
 | 4b | `/sdd-specify` | WHAT and WHY (+ wireframe, if it has screens) | `spec_repo: none` only |
@@ -202,9 +202,9 @@ templates together, from writing the spec to shipping the code, in
 - Replace this README with `docs/templates/readme.md` filled in. On an existing
   repo, keep what your own README already said and only add the sections it
   lacked.
-- Delete every directory under `docs/specs/` — they ship as examples, not as your
-  specs. Specs arrive with `/sdd-sync`, or are written here when there is no
-  Spec Repository.
+- `docs/specs/` ships empty. Specs arrive with `/sdd-sync`, or are written here
+  when there is no Spec Repository — delete any directory left over from
+  testing the template, but there is no example to remove.
 
 </details>
 
@@ -301,7 +301,7 @@ docs/
                        readme.md — the project README, written by /sdd-init
                        cross-repo.md — /sdd-init copies it in for multi-repo products
   specs/
-    007-password-reset/  one directory per feature
+    NNN-slug/  one directory per feature
       spec.md          mirrored, read-only
       spec.link.yml    source id, ref, commit, checksums
       wireframe.html   mirrored, only when the feature has screens
