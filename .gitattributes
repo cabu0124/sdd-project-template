@@ -1,0 +1,20 @@
+# A mirrored spec is hashed byte for byte, so its bytes must not depend on who
+# checked it out. Without this, a sync run on Windows records the hash of a CRLF
+# file, CI checks out LF, and the spec-mirror job fails a spec nobody edited.
+* text=auto eol=lf
+
+docs/specs/**/spec.md        text eol=lf
+docs/specs/**/wireframe.html text eol=lf
+docs/specs/**/spec.link.yml  text eol=lf
+
+*.sh text eol=lf
+
+*.png binary
+*.jpg binary
+*.jpeg binary
+*.gif binary
+*.webp binary
+*.ico binary
+*.pdf binary
+*.woff binary
+*.woff2 binary

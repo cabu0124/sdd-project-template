@@ -86,6 +86,22 @@ readable offline, and versioned with the plan that was written against it. It is
 still not yours: `spec.link.yml` carries a `sha256` per mirrored file, and
 `/sdd-sync` and `/sdd-analyze` compare against it.
 
+One script takes that digest, `scripts/spec-hash.sh`, and everything that writes
+or reads a hash calls it — `/sdd-sync`, `/sdd-analyze`, and the `spec-mirror`
+job:
+
+```bash
+scripts/spec-hash.sh docs/specs/007-password-reset   # the files: block to record
+scripts/spec-hash.sh --check                         # what CI runs
+```
+
+That is not ceremony. A hash is only evidence if everyone takes it the same way,
+and the ways to take it differently are all mundane: `Get-FileHash` returns
+uppercase hex, a mirror saved through an editor on Windows is CRLF where the
+sync recorded LF, a hand-copied digest is a typo. Each of those fails a spec
+nobody edited, in somebody else's pull request — which is why `.gitattributes`
+pins the mirrored files to LF and why no command computes a digest of its own.
+
 | Situation | What to do |
 | --- | --- |
 | The spec is ambiguous or wrong | Raise it in the Spec Repository — `/sdd-clarify` there. Never patch the mirror |
@@ -115,6 +131,23 @@ gate even if nobody re-synced. And the `spec-mirror` job in
 `.github/workflows/spec-mirror.yml` recomputes them on every pull request, which
 is the backstop for the case neither command covers: nobody thought to run
 either one. Local drift cannot reach `develop`.
+
+### When `spec-mirror` fails
+
+Run `scripts/spec-hash.sh --check` locally — it is the same code, so it says the
+same thing — and read which of the three it reported:
+
+| The job says | What happened | Fix |
+| --- | --- | --- |
+| `does not match the hash recorded` | The mirror was edited here | Correct the spec upstream, then `/sdd-sync <id>` again |
+| `matches … only once CR is stripped` | The mirror was committed CRLF, the hash recorded LF | `git config core.autocrlf input`, renormalise the file, commit. `.gitattributes` holds it after that |
+| `is recorded in spec.link.yml but is not in …` | A mirrored file was deleted or renamed | `/sdd-sync <id>` again; the mirror's contents are the source's, not this repo's |
+
+A mismatch on a spec you did not touch, in a repository where several people
+sync, is almost always the second row — the bytes agree and the way they were
+hashed did not. Re-running `/sdd-sync` fixes the symptom; committing
+`.gitattributes` and taking every digest from `scripts/spec-hash.sh` is what
+stops it recurring.
 
 ## Sibling development repositories
 
