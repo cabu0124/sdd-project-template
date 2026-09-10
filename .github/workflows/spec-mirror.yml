@@ -2,6 +2,10 @@
 # a sha256 for every file that was copied. This recomputes them, so a mirror edited
 # here fails the pull request instead of quietly giving this repository its own
 # version of what was agreed. See docs/spec-repo.md.
+#
+# The digest comes from scripts/spec-hash.sh — the same script /sdd-sync uses to
+# write it. One implementation, or this job fails on how somebody's machine took
+# the hash rather than on what the file says.
 name: Spec mirror
 
 on:
@@ -20,53 +24,4 @@ jobs:
       - uses: actions/checkout@v4
 
       - name: Check every mirrored spec against its recorded hashes
-        run: |
-          set -euo pipefail
-          # nullglob: this template ships with no specs at all, and a repository
-          # whose spec_repo is `none` never has a spec.link.yml. Both must pass.
-          shopt -s nullglob
-
-          failed=0
-          checked=0
-
-          for link in docs/specs/*/spec.link.yml; do
-            dir=$(dirname "$link")
-
-            # The `files:` block is a flat "name: sha256" list. Nothing nests under
-            # it, so awk reading to the next unindented key is enough — no YAML
-            # parser, which is why the file is kept flat in the first place.
-            while read -r name want; do
-              [ -n "$name" ] || continue
-              checked=$((checked + 1))
-              file="$dir/$name"
-
-              if [ ! -f "$file" ]; then
-                echo "::error file=$link::$name is recorded in spec.link.yml but is not in $dir"
-                failed=1
-                continue
-              fi
-
-              got=$(sha256sum "$file" | cut -d' ' -f1)
-              if [ "$got" != "$want" ]; then
-                echo "::error file=$file::$name does not match the hash recorded in $link"
-                echo "::error file=$file::The mirror is read-only. Correct the spec in the Spec Repository and re-run /sdd-sync — never edit it here."
-                failed=1
-              fi
-            done < <(awk '
-              /^files:/            { in_files = 1; next }
-              in_files && /^[^[:space:]#]/ { exit }
-              in_files && /^[[:space:]]+[^[:space:]#]/ {
-                sub(/:$/, "", $1); print $1, $2
-              }' "$link")
-          done
-
-          if [ "$failed" -ne 0 ]; then
-            echo "A mirrored spec has been changed in this repository. docs/spec-repo.md says what to do."
-            exit 1
-          fi
-
-          if [ "$checked" -eq 0 ]; then
-            echo "No mirrored specs to check."
-          else
-            echo "$checked mirrored file(s) match their recorded hashes."
-          fi
+        run: bash scripts/spec-hash.sh --check
