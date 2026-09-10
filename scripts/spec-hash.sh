@@ -42,6 +42,14 @@ sha256_of() { sha256_stdin < "$1"; }
 # mismatch to sha256 and very different problems to the person reading the log.
 sha256_lf_of() { tr -d '\r' < "$1" | sha256_stdin; }
 
+# "spec_repo: none" collapses the whole block to one line; anything else, or no
+# file at all, means there is nothing upstream to compare an orphan spec against.
+spec_repo_configured() {
+  [ -f .sdd/config.yml ] || return 1
+  grep -qE '^spec_repo:[[:space:]]*none[[:space:]]*(#.*)?$' .sdd/config.yml && return 1
+  return 0
+}
+
 # The files copied by /sdd-sync, from .sdd/config.yml. Both the block form and
 # the inline `mirror: [spec.md, wireframe.html]` form appear in the docs; when
 # neither is there to read, the template's own two files are the answer.
@@ -87,7 +95,8 @@ mirror_files() {
 
 # The `files:` block of a spec.link.yml, as "name hash" pairs. Tolerant on the
 # way in — CR, quotes and uppercase hex are all somebody else's editor, not a
-# changed spec — and canonical on the way out.
+# changed spec — and canonical on the way out. A digest that is not 64 hex
+# characters is the template's own <sha256> placeholder, never edited.
 recorded_files() {
   awk '
     { sub(/\r$/, "") }
@@ -99,21 +108,30 @@ recorded_files() {
       gsub(/[^A-Za-z0-9._-]/, "", name)
       digest = $2
       gsub(/[^A-Fa-f0-9]/, "", digest)
-      if (name != "") print name, tolower(digest)
+      digest = tolower(digest)
+      if (digest !~ /^[0-9a-f]{64}$/) digest = "PLACEHOLDER"
+      if (name != "") print name, digest
     }
   ' "$1"
 }
 
 emit() {
-  local dir=$1 name
+  local dir=$1 name body="" count=0
   [ -d "$dir" ] || { echo "spec-hash: no such directory: $dir" >&2; exit 2; }
 
-  echo "files:"
   while read -r name; do
     [ -n "$name" ] || continue
     [ -f "$dir/$name" ] || continue
-    printf '  %s: %s\n' "$name" "$(sha256_of "$dir/$name")"
+    body+="  $name: $(sha256_of "$dir/$name")"$'\n'
+    count=$((count + 1))
   done < <(mirror_files)
+
+  if [ "$count" -eq 0 ]; then
+    echo "spec-hash: no file listed under mirror was found in $dir — nothing to hash" >&2
+    exit 2
+  fi
+
+  printf 'files:\n%s' "$body"
 }
 
 checked=0
@@ -128,6 +146,12 @@ check_one() {
     checked=$((checked + 1))
     found=1
     local file="$dir/$name"
+
+    if [ "$want" = PLACEHOLDER ]; then
+      echo "::error file=$link::$name has no real sha256 recorded — spec.link.yml still carries the template's <sha256> placeholder. Re-run /sdd-sync to rewrite it."
+      failed=1
+      continue
+    fi
 
     if [ ! -f "$file" ]; then
       echo "::error file=$link::$name is recorded in spec.link.yml but is not in $dir"
@@ -173,6 +197,22 @@ check() {
     [ -f "$link" ] || continue
     check_one "$link"
   done
+
+  # A mirrored spec.md with no spec.link.yml is invisible to the loop above —
+  # exactly the hand-written spec the mirror check exists to catch — so look
+  # for it separately, and only when a Spec Repository is actually configured.
+  if spec_repo_configured; then
+    local dir spec link2
+    for dir in docs/specs/*/; do
+      spec="${dir%/}/spec.md"
+      [ -f "$spec" ] || continue
+      link2="${dir%/}/spec.link.yml"
+      if [ ! -f "$link2" ]; then
+        echo "::error file=$spec::this mirrored spec has no spec.link.yml — a hand-written spec here is exactly what the mirror check exists to catch. Re-run /sdd-sync, or remove it if it does not belong."
+        failed=1
+      fi
+    done
+  fi
 
   if [ "$failed" -ne 0 ]; then
     echo "A mirrored spec no longer matches the hash recorded for it. docs/spec-repo.md says what to do."
