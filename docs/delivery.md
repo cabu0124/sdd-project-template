@@ -185,12 +185,13 @@ enforces them:
 | Squash and merge commits both enabled; rebase disabled | the two merges do different jobs — see `## Merges` |
 | "Default to pull request title for squash merge commits" | otherwise the validated title is not the one that lands |
 | `main` and `develop` protected, pull request required | a direct push bypasses every check above |
-| `conventional-commit` required as a status check | a check that can be skipped is documentation |
+| `conventional-commit` and `spec-mirror` required as status checks | a check that can be skipped is documentation |
 | "Automatically delete head branches" **off** | the promotion's head branch is `develop`, and the setting would delete it |
 | `main` and `develop` restricted against deletion | the second guard on the same mistake |
 
-The required check is named after the **job**, not the workflow or the file:
-`conventional-commit`, defined in `.github/workflows/pr-title.yml`. Requiring a
+The required checks are named after the **job**, not the workflow or the file:
+`conventional-commit` in `.github/workflows/pr-title.yml`, `spec-mirror` in
+`.github/workflows/spec-mirror.yml`. Requiring a
 name nothing reports leaves every pull request stuck on *Expected — waiting for
 status to be reported*, forever and silently.
 
