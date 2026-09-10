@@ -13,8 +13,8 @@ Argument: a spec id.
   stop and say so. That gate is the point of the method, not a formality. A spec
   that is not here yet is not written here: `/sdd-sync <id>` brings it in.
 - `spec.link.yml`, when the spec has one — it is mirrored from the Spec
-  Repository. Check the recorded `sha256` of `spec.md` against the file: a
-  mismatch means the mirror was edited here, and that is a stop, not a detail.
+  Repository. Check it with `scripts/spec-hash.sh --check docs/specs/<NNN-slug>`:
+  a mismatch means the mirror was edited here, and that is a stop, not a detail.
   The approval gate is upstream's `status:`; this repo does not grant it.
 - `AGENTS.md` — stack, conventions, boundaries, what is off-limits.
 - `docs/constitution.md` — it outranks convenience when you have to choose.

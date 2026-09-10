@@ -153,8 +153,10 @@ beside it — source id, ref, commit, and a `sha256` per file. That copy is
 reviewable in a pull request, readable offline, and versioned next to the plan
 written against it.
 
-**The mirror is read-only.** Its hashes are checked by `/sdd-sync` and
-`/sdd-analyze`, so an edit made here surfaces instead of spreading. A spec that
+**The mirror is read-only.** Its hashes are checked by `/sdd-sync`,
+`/sdd-analyze` and the `spec-mirror` job — all through `scripts/spec-hash.sh`,
+so the check never fails on how the digest was taken — and an edit made here
+surfaces instead of spreading. A spec that
 is wrong, ambiguous or impossible is fixed in the Spec Repository, where the fix
 reaches every repository that implements it.
 

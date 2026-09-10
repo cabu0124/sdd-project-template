@@ -1,6 +1,10 @@
 # Provenance of the mirrored spec. Written by /sdd-sync — do not edit by hand.
 # The spec beside this file is a verbatim copy: it is owned by the Spec
 # Repository, and changing it here is what this file exists to detect.
+#
+# The hashes below come from `scripts/spec-hash.sh <this directory>`, which
+# prints the whole `files:` block. Compute them any other way and they will
+# disagree with the way they are read back, on somebody else's machine.
 
 spec_repo: <spec-repo>            # `spec_repo.name` from .sdd/config.yml
 
