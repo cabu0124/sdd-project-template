@@ -98,11 +98,10 @@ has no tests.
    it: `scripts/spec-sync.sh --list` must name the source, the commit and the
    spec ids it found. With only a `remote` that cannot be reached from here, say
    it is unverified rather than claiming it works. `none` means `/sdd-specify`
-   writes specs here — then delete `docs/commands/sync.md`, `docs/spec-repo.md`,
-   `docs/templates/spec.link.yml`, `scripts/spec-sync.sh`, `scripts/spec-hash.sh`,
-   `scripts/sdd-check.sh`, `.github/workflows/spec-mirror.yml`
-   and the `docs/spec-repo.md` mention from the "Read on demand" table, and say
-   in the report that adding a Spec Repository later is this command again.
+  writes specs here. Keep the sync command, provenance template, scripts and
+  checks in place but inactive: `spec_repo: none` is the switch. Adding a Spec
+  Repository later is this command again, and must not depend on restoring
+  files that an earlier run deleted.
 8. If the product spans repositories that cannot be built from here, copy
    `docs/templates/cross-repo.md` to `docs/cross-repo.md` — that is where the
    loop's other commands look for it. A single-repo product does not copy it.
@@ -110,9 +109,10 @@ has no tests.
    `feature/* → develop → main → deploy → flag on`, no release branches — and
    that is a default, not a fact about this repo. Three things to settle:
    - No `develop` branch yet: say so, and give the one command that creates it.
-   - Not on GitHub Actions: delete `.github/workflows/` and name the CI that
-     runs the same two checks. A workflow for a CI nobody uses is worse than no
-     workflow.
+   - Not on GitHub Actions: remove the template workflows only after naming the
+     CI configuration that runs the same checks. Keep `scripts/sdd-check.sh` as
+     the portable entry point; deleting a GitHub workflow is not a replacement
+     for integrating that command with the project's CI.
    - A branching model the team already follows: write down theirs, and keep
      `## Feature flags` — it holds whatever the branches look like.
    Never invent a deploy target. "Not decided yet" is an answer; a fictional
@@ -125,7 +125,10 @@ has no tests.
     product: delete `docs/templates/cross-repo.md`, it was not needed. A repo
     whose specs come from a Spec Repository never writes one, so delete
     `docs/templates/spec.md` as well — the mirror is the only spec here.
-    `docs/delivery.md` is not a template — it stays, adapted in step 9. Replace
+    `docs/delivery.md` is not a template — it stays, adapted in step 9. A repo
+    whose specs are local keeps `docs/templates/spec.md`; a repo whose specs
+    come from a Spec Repository may delete it because mirrors are the only specs
+    written here. Replace
     `LICENSE` with the licence of what you build — the template's is not a
     default to keep.
     Delete `CHANGELOG.md` if it carries the template's own releases: a repository
@@ -141,9 +144,9 @@ has no tests.
 `AGENTS.md`, `docs/constitution.md`, `README.md`, `.sdd/config.yml`,
 `docs/delivery.md`, and `docs/cross-repo.md` when the product spans repos. It
 deletes the inherited `CHANGELOG.md` and `LICENSE`'s template placeholder text,
-and `.github/workflows/pr-title.yml` and `release.yml` when the project is not
-on GitHub Actions — `spec-mirror.yml` stays even then, since it is the mirror's
-integrity check, not a delivery concern. No source code,
+and the template's `.github/workflows/` only after an equivalent CI integration
+is named when the project is not on GitHub Actions. The portable scripts stay in
+every mode. No source code,
 no scaffolding, no first spec, no agent adapters, and no conversion of anyone
 else's specs.
 

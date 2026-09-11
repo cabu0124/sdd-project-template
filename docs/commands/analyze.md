@@ -54,11 +54,12 @@ Check in this order, and report findings grouped by severity:
 7. **Technical** — risks the plan does not mention, work it assumes exists and
    does not, ordering in `tasks.md` that cannot hold.
 8. **Spec drift** — if the spec is mirrored, run `scripts/spec-sync.sh <source id>`,
-   the id `spec.link.yml` records. It writes nothing and answers both questions
+   the id `spec.link.yml` records. Preview writes nothing and answers both questions
    at once: exit 1 means the mirror was edited **here**, exit 3 means upstream
    moved. Report which, with the diff, and what it invalidates — an upstream
    change that touches a requirement or an acceptance criterion invalidates the
-   plan and the tasks built on it. Neither is fixed here: `/sdd-sync <id>` is.
+   plan and the tasks built on it. Neither is fixed here: `/sdd-sync <id>` is,
+   applying the exact commit reported by preview after the user accepts it.
 9. **Contract drift** — if the plan carries a contract another repo owns, read it
    at the revision the plan pinned and compare that with the owner's current
    one. List every difference and what it breaks here, and say whether a

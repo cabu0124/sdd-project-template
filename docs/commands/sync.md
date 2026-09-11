@@ -18,8 +18,8 @@ already here is a re-sync, and it reports the diff before touching anything.
 
 ```bash
 scripts/spec-sync.sh --list           # the ids available upstream
-scripts/spec-sync.sh <id>             # syncs a new spec; on a re-sync, prints the diff and stops
-scripts/spec-sync.sh --write <id>     # applies a re-sync the user has seen
+scripts/spec-sync.sh <id>             # previews a new sync or re-sync; writes nothing
+scripts/spec-sync.sh --write <sha> <id> # applies exactly the revision previewed
 ```
 
 It resolves the Spec Repository to one commit, reads every mirrored file at that
@@ -32,10 +32,10 @@ Its exit code is the whole interface:
 
 | Exit | Means | What you do |
 | --- | --- | --- |
-| 0 | Synced, or already in sync | Report the commit, the local id and the status upstream |
+| 0 | Already in sync, or an exact revision was applied | Report the commit, the local id and the status upstream |
 | 1 | The mirror here was edited, or that id is not upstream | Stop and report. The fix is upstream, never here |
 | 2 | No Spec Repository configured, or the config is unfilled | Stop: `/sdd-specify` or `/sdd-init`, and say which |
-| 3 | A re-sync would change this mirror | The judgement below, then `--write` |
+| 3 | A new sync or re-sync is ready for review | The judgement below, then `--write <sha> <id>` |
 
 ## Read first
 
@@ -55,8 +55,8 @@ Its exit code is the whole interface:
 
 1. `scripts/spec-sync.sh --list` when you have no id, or to confirm the one you
    were given exists upstream.
-2. `scripts/spec-sync.sh <id>`. Report the source it read, the commit it
-   resolved, and the local directory.
+2. `scripts/spec-sync.sh <id>`. It writes nothing. Report the source it read,
+   the commit it resolved, and the proposed local directory.
 3. Read the spec. Report its title, status, requirements and acceptance
    criteria, and — when it names them — the repositories that implement it. If
    this repository is not one of them, say so and ask before going further.
@@ -68,7 +68,10 @@ Its exit code is the whole interface:
    - wording that changes nothing built invalidates nothing, and saying that
      plainly is as useful as raising the alarm.
 
-   Then `scripts/spec-sync.sh --write <id>`, once the user has decided.
+   Then run the exact command printed by preview,
+   `scripts/spec-sync.sh --write <sha> <id>`, once the user has decided. The SHA
+   is the approval boundary: if the source ref advances, the reviewed revision
+   is still the one applied.
 5. **Exit 1 — the mirror was edited here.** Do not re-sync over it and do not
    repair it. Report what differs and stop: the correction belongs in the Spec
    Repository, where it reaches every repository at once.

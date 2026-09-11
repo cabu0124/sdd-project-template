@@ -181,7 +181,7 @@ templates together, from writing the spec to shipping the code, in
 
 1. **Copy this template** into the new repo.
 2. **Set up your agent tool.** Point it at [`docs/commands/onboard.md`](docs/commands/onboard.md) and follow
-   it. It asks which tools you use and generates their adapter and `sdd-*`
+  it. It asks which tools you use, runs `scripts/sdd-onboard.sh`, and generates their adapter and `sdd-*`
    command files — all `.gitignore`d. After this, `/sdd-init` and the rest work
    as slash commands. *Each developer does this once.*
 3. **Run `/sdd-init new`** if there is no code yet, or **`/sdd-init existing`**
@@ -189,7 +189,7 @@ templates together, from writing the spec to shipping the code, in
    out, fills `AGENTS.md`, `docs/constitution.md` and `.sdd/config.yml` — where
    your Spec Repository is — and replaces this README with one that describes
    your project.
-4. **Run `/sdd-sync <spec id>`** to bring in the first spec, or
+4. **Run `/sdd-sync <spec id>`** to preview and accept the first spec, or
    `/sdd-specify <what you need>` if this repo owns its specs.
 
 <details>
@@ -216,7 +216,7 @@ templates together, from writing the spec to shipping the code, in
 
 | Step | You | Agent |
 | --- | --- | --- |
-| 1 | `/sdd-sync <id>` — or `/sdd-specify <feature>` when this repo owns its specs | Mirrors `spec.md` (+ `wireframe.html`) from the Spec Repository and records its provenance in `spec.link.yml`, stops |
+| 1 | `/sdd-sync <id>` — or `/sdd-specify <feature>` when this repo owns its specs | Previews the source revision without writing; after acceptance, mirrors `spec.md` (+ `wireframe.html`) at that exact commit and records `spec.link.yml`, stops |
 | 2 | Ambiguity in a mirrored spec | Reported here, answered in the Spec Repository, and re-synced |
 | 3 | The spec is published upstream — `approved` | — |
 | 4 | `/sdd-plan <NNN>` | Writes `plan.md`, stops |
@@ -311,6 +311,11 @@ docs/
       wireframe.html   mirrored, only when the feature has screens
       plan.md          ours
       tasks.md         ours
+scripts/
+  sdd-onboard.sh       deterministic generator for local agent adapters
+  spec-sync.sh         previews and applies mirrors at an exact source revision
+  spec-hash.sh         records and verifies mirrored bytes and provenance
+  sdd-check.sh         portable local and CI entry point
 ```
 
 That is the whole repo. `onboard` adds, **outside version control**, the adapter

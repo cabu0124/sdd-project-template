@@ -93,18 +93,18 @@ job:
 
 ```bash
 scripts/spec-sync.sh --list                          # the spec ids upstream
-scripts/spec-sync.sh <id>                            # sync it, or report what would change
-scripts/spec-sync.sh --write <id>                    # apply a re-sync you have read
+scripts/spec-sync.sh <id>                            # preview; write nothing
+scripts/spec-sync.sh --write <sha> <id>              # apply the reviewed revision
 scripts/spec-hash.sh docs/specs/007-password-reset   # the files: block to record
 scripts/sdd-check.sh                                 # what CI runs
 ```
 
-`scripts/spec-sync.sh` is the mechanical half of `/sdd-sync`: it resolves the
-Spec Repository to one commit, copies the spec out of git, and records the
-provenance and the hashes. It writes nothing when a re-sync would change a
-mirror already here — it prints the diff and exits, because a changed
-requirement invalidates the plan and the tasks built on it, and that judgement
-is the command's, not the script's. It never touches `plan.md` or `tasks.md`.
+`scripts/spec-sync.sh` is the mechanical half of `/sdd-sync`: preview resolves
+the Spec Repository to one commit, stages the spec and reports what would
+change without writing. Apply takes that full commit SHA, copies those exact
+bytes and records their provenance and hashes. A moving branch therefore cannot
+replace the revision the user reviewed. It never touches `plan.md` or
+`tasks.md`.
 
 That is not ceremony. A hash is only evidence if everyone takes it the same way,
 and the ways to take it differently are all mundane: `Get-FileHash` returns

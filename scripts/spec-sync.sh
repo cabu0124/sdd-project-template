@@ -3,9 +3,9 @@
 # The mechanical half of /sdd-sync: resolve the Spec Repository to one commit,
 # copy the spec out of git byte for byte, and record where it came from.
 #
-#   scripts/spec-sync.sh --list           # the spec ids available upstream
-#   scripts/spec-sync.sh <id>             # sync it; report and stop if it would overwrite
-#   scripts/spec-sync.sh --write <id>     # apply a re-sync you have already seen
+#   scripts/spec-sync.sh --list                  # the spec ids available upstream
+#   scripts/spec-sync.sh <id>                    # preview a new sync or re-sync
+#   scripts/spec-sync.sh --write <commit> <id>  # apply exactly what was previewed
 #
 # Everything here is the same every time: resolving a ref, reading a blob,
 # writing a hash. What is left to /sdd-sync is the part that needs judgement —
@@ -37,10 +37,16 @@ config_field() {
 write=0
 mode=sync
 id=""
+requested_commit=""
 
 while [ "$#" -gt 0 ]; do
   case "$1" in
-    --write|-w) write=1 ;;
+    --write|-w)
+      write=1
+      shift
+      [ "$#" -gt 0 ] || die "--write needs the commit shown by the preview" 2
+      requested_commit=$1
+      ;;
     --list|-l) mode=list ;;
     --help|-h) awk 'NR > 1 && /^#/ { sub(/^#[[:space:]]?/, ""); print; next } NR > 1 { exit }' "$0"; exit 0 ;;
     -*) die "unknown option: $1" 2 ;;
@@ -48,6 +54,10 @@ while [ "$#" -gt 0 ]; do
   esac
   shift
 done
+
+if [ "$write" -eq 1 ] && ! printf '%s' "$requested_commit" | grep -qE '^([0-9a-f]{40}|[0-9a-f]{64})$'; then
+  die "--write commit must be a full 40- or 64-character sha" 2
+fi
 
 [ -f "$CONFIG" ] || die "$CONFIG not found — /sdd-init writes it" 2
 grep -qE '^spec_repo:[[:space:]]*none[[:space:]]*(#.*)?$' "$CONFIG" \
@@ -92,28 +102,35 @@ if [ -n "$path" ] && git -C "$path" rev-parse --git-dir >/dev/null 2>&1; then
   git -C "$src" fetch --quiet >/dev/null 2>&1 || true
 elif [ -n "$remote" ]; then
   tmp=$(mktemp -d)
-  git clone --quiet --depth 1 --branch "$ref" "$remote" "$tmp/spec-repo" 2>/dev/null \
-    || die "could not clone $remote at $ref. A ref pinned to a commit sha needs a fetch, not --branch"
+  git -C "$tmp" init --quiet spec-repo
   src="$tmp/spec-repo"
+  git -C "$src" remote add origin "$remote"
   kind=remote
   source_kind="remote $remote"
 else
   die "neither path nor remote resolves to a git repository — check $CONFIG"
 fi
 
-# One commit, resolved once: a branch moves, and resolving it per file mirrors
-# one revision's spec beside the next one's wireframe.
+# One commit, resolved once. Apply resolves the reviewed commit itself rather
+# than the branch or tag again, so a moving ref cannot change what gets written.
+target=${requested_commit:-$ref}
 if [ "$kind" = remote ]; then
-  commit=$(git -C "$src" rev-parse --verify HEAD^{commit})
+  git -C "$src" fetch --quiet --depth 1 origin "$target" 2>/dev/null \
+    || die "could not fetch $target from $remote"
+  commit=$(git -C "$src" rev-parse --verify FETCH_HEAD^{commit})
 else
-  commit=$(git -C "$src" rev-parse --verify "$ref^{commit}" 2>/dev/null) \
-    || die "$ref does not resolve in $path"
+  commit=$(git -C "$src" rev-parse --verify "$target^{commit}" 2>/dev/null) \
+    || die "$target does not resolve in $path"
   # Reading the local ref is deliberate; saying so is what stops a stale
   # checkout from looking like a changed spec.
   if published=$(git -C "$src" rev-parse --verify --quiet "origin/$ref^{commit}"); then
     [ "$published" != "$commit" ] \
       && echo "note: $ref here is $commit, origin/$ref is $published. Reading the local one." >&2
   fi
+fi
+
+if [ -n "$requested_commit" ] && [ "$commit" != "$requested_commit" ]; then
+  die "reviewed commit $requested_commit resolved as $commit; nothing written"
 fi
 
 available() { git -C "$src" ls-tree --name-only "$commit:$specs_dir" 2>/dev/null | sed 's#/$##'; }
@@ -211,12 +228,27 @@ if [ "$fresh" -eq 0 ]; then
     exit 0
   fi
 
-  if [ "$write" -eq 0 ]; then
+fi
+
+if [ "$write" -eq 0 ]; then
+  echo
+  if [ "$fresh" -eq 1 ]; then
+    while read -r file; do
+      [ -n "$file" ] || continue
+      echo "new upstream: $file"
+      diff -u /dev/null "$stage/$file" || true
+    done <<<"$copied"
     echo
+    echo "Nothing written. Review the source spec first, then apply this exact revision:"
+  elif [ "$changed" -eq 0 ]; then
+    echo "Only the source revision changed; mirrored files are byte-identical."
+    echo "No re-planning is required. Apply the provenance update with:"
+  else
     echo "Nothing written. A changed requirement or acceptance criterion invalidates"
-    echo "plan.md and tasks.md, so read the diff first — then: scripts/spec-sync.sh --write $id"
-    exit 3
+    echo "plan.md and tasks.md. Review the diff, then apply this exact revision:"
   fi
+  echo "scripts/spec-sync.sh --write $commit $id"
+  exit 3
 fi
 
 mkdir -p "$dir"
