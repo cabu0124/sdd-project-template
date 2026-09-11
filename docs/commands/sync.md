@@ -14,6 +14,24 @@ Argument: a spec id as the Spec Repository names it (`001-password-reset`,
 Re-run it any time to pick up an approved change upstream. Running it on a spec
 already here is a re-sync, and it reports the diff before touching anything.
 
+## The script does the mechanical half
+
+`scripts/spec-sync.sh` resolves the source to one commit, copies the mirrored
+files out of git, and writes the provenance and the hashes — everything below
+that is the same every time. Run it, and spend your attention on what it
+deliberately refuses to decide: whether a changed requirement invalidates the
+plan and the tasks built on it.
+
+```bash
+scripts/spec-sync.sh --list           # the ids available upstream
+scripts/spec-sync.sh <id>             # syncs a new spec; on a re-sync it prints the diff and stops
+scripts/spec-sync.sh --write <id>     # applies a re-sync, once the user has seen it
+```
+
+It exits 3 when a re-sync is pending, 1 when the mirror was edited here, and it
+never writes `plan.md`, `tasks.md` or code. The steps below are what it does and
+what you still owe the user around it.
+
 ## Read first
 
 - `.sdd/config.yml` — the Spec Repository, its ref, and where its specs sit. If

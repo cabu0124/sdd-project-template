@@ -92,9 +92,19 @@ or reads a hash calls it — `/sdd-sync`, `/sdd-analyze`, and the `spec-mirror`
 job:
 
 ```bash
+scripts/spec-sync.sh --list                          # the spec ids upstream
+scripts/spec-sync.sh <id>                            # sync it, or report what would change
+scripts/spec-sync.sh --write <id>                    # apply a re-sync you have read
 scripts/spec-hash.sh docs/specs/007-password-reset   # the files: block to record
-scripts/spec-hash.sh --check                         # what CI runs
+scripts/sdd-check.sh                                 # what CI runs
 ```
+
+`scripts/spec-sync.sh` is the mechanical half of `/sdd-sync`: it resolves the
+Spec Repository to one commit, copies the spec out of git, and records the
+provenance and the hashes. It writes nothing when a re-sync would change a
+mirror already here — it prints the diff and exits, because a changed
+requirement invalidates the plan and the tasks built on it, and that judgement
+is the command's, not the script's. It never touches `plan.md` or `tasks.md`.
 
 That is not ceremony. A hash is only evidence if everyone takes it the same way,
 and the ways to take it differently are all mundane: `Get-FileHash` returns
@@ -135,7 +145,7 @@ either one. Local drift cannot reach `develop`.
 
 ### When `spec-mirror` fails
 
-Run `scripts/spec-hash.sh --check` locally — it is the same code, so it says the
+Run `scripts/sdd-check.sh` locally — it is the same code CI runs, so it says the
 same thing — and read which of the three it reported:
 
 | The job says | What happened | Fix |

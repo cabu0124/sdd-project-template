@@ -23,5 +23,5 @@ jobs:
     steps:
       - uses: actions/checkout@v4
 
-      - name: Check every mirrored spec against its recorded hashes
-        run: bash scripts/spec-hash.sh --check
+      - name: Check every mirrored spec against its recorded hashes and source
+        run: bash scripts/sdd-check.sh
