@@ -58,9 +58,12 @@ hold.
 3. Report failures as failures, with the output. Do not fix anything in the same
    run.
 4. Report each passing criterion with the link that proves it — the CI run, the
-   pipeline job. When the spec is mirrored and spans repositories, that link is
-   what its `## Verification` ledger records, and the Spec Repository will not
-   move the spec to `done` without it. Give the link, never the output.
+   pipeline job — and with the spec revision it was proved against, which is
+   `source.commit` in `spec.link.yml`. When the spec is mirrored and spans
+   repositories, those two are what its `## Verification` ledger records, and
+   the Spec Repository will not move the spec to `done` without them. A pass
+   reported without its revision is indistinguishable from a pass against
+   wording that has since changed upstream. Give the link, never the output.
 5. A criterion that only holds with another repository running is not proved by
    this repo's suite against a mock, and reporting it as met here is how two
    green repositories ship a broken product. Say so, and name the verifier the
