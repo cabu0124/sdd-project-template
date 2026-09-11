@@ -8,9 +8,9 @@
 # record two different hashes for the same bytes, and the mirror check fails on
 # a file nobody edited. So they all call this script instead.
 #
-#   scripts/spec-hash.sh docs/specs/007-password-reset   # the files: block to record
+#   scripts/spec-hash.sh specs/007-password-reset   # the files: block to record
 #   scripts/spec-hash.sh --check                         # verify every mirror
-#   scripts/spec-hash.sh --check docs/specs/007-...      # verify one
+#   scripts/spec-hash.sh --check specs/007-...      # verify one
 #   scripts/spec-hash.sh --mirror-files                  # the files a sync copies
 #   scripts/spec-hash.sh --source-id <spec.link.yml>     # the id it came from
 #
@@ -235,7 +235,7 @@ check() {
   # No argument means every mirror. The glob may expand to nothing; "$@" is the
   # one expansion that stays safe under `set -u` when it does.
   if [ "$#" -eq 0 ]; then
-    set -- docs/specs/*/spec.link.yml
+    set -- specs/*/spec.link.yml
   fi
 
   local link
@@ -251,7 +251,7 @@ check() {
   # for it separately, and only when a Spec Repository is actually configured.
   if spec_repo_configured; then
     local dir spec link2
-    for dir in docs/specs/*/; do
+    for dir in specs/*/; do
       spec="${dir%/}/spec.md"
       [ -f "$spec" ] || continue
       link2="${dir%/}/spec.link.yml"

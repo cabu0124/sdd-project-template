@@ -3,9 +3,9 @@
 # file, CI checks out LF, and the spec-mirror job fails a spec nobody edited.
 * text=auto eol=lf
 
-docs/specs/**/spec.md        text eol=lf
-docs/specs/**/wireframe.html text eol=lf
-docs/specs/**/spec.link.yml  text eol=lf
+specs/**/spec.md        text eol=lf
+specs/**/wireframe.html text eol=lf
+specs/**/spec.link.yml  text eol=lf
 
 *.sh text eol=lf
 

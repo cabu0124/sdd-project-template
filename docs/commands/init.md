@@ -86,7 +86,7 @@ has no tests.
    where the specs live. Delete every `<...>` you cannot ground; a plausible
    install command nobody has run is worse than a missing section. Keep the
    "Spec first" section either way — it is the only part that is about the loop,
-   and it is what tells a newcomer why `docs/specs/` exists.
+   and it is what tells a newcomer why `specs/` exists.
    For `existing`, the project's own README is the source, not the template:
    carry over what it already said — install steps, usage, badges, license,
    links — and add only the sections it was missing.

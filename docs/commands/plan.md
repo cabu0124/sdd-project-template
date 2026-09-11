@@ -1,7 +1,7 @@
 # /sdd-plan — technical design for an approved spec
 
 **Goal.** Decide HOW **this repository** implements the approved spec, and write
-it to `docs/specs/<NNN-slug>/plan.md`. The spec is the same in every repo that
+it to `specs/<NNN-slug>/plan.md`. The spec is the same in every repo that
 implements it; this is the file where it becomes technology, and where this
 repo's share of it is fixed.
 
@@ -17,7 +17,7 @@ Argument: a spec id.
   product later plans against it like any other. A spec that is not here yet is
   not written here: `/sdd-sync <id>` brings it in.
 - `spec.link.yml`, when the spec has one — it is mirrored from the Spec
-  Repository. Check it with `scripts/spec-hash.sh --check docs/specs/<NNN-slug>`:
+  Repository. Check it with `scripts/spec-hash.sh --check specs/<NNN-slug>`:
   a mismatch means the mirror was edited here, and that is a stop, not a detail.
   The approval gate is upstream's `status:`; this repo does not grant it.
 - `AGENTS.md` — stack, conventions, boundaries, what is off-limits.
@@ -78,7 +78,7 @@ convention here, and reading it is faster than asking about it.
 
 ## Writes
 
-`docs/specs/<NNN-slug>/plan.md`. No `tasks.md`, no code.
+`specs/<NNN-slug>/plan.md`. No `tasks.md`, no code.
 
 ## Stops when
 

@@ -150,7 +150,7 @@ spec_repo:
 
 `/sdd-sync <id>` resolves the authoritative remote ref, optionally through a
 matching local path cache, reads the spec at one commit, copies it into
-`docs/specs/<NNN-slug>/` **byte for byte**, and writes
+`specs/<NNN-slug>/` **byte for byte**, and writes
 `spec.link.yml` beside it — source id, ref, commit, and a `sha256` per file.
 That mechanical half is `scripts/spec-sync.sh`, which the command runs rather
 than reimplements; what the command adds is the judgement the script refuses to
@@ -207,7 +207,7 @@ templates together, from writing the spec to shipping the code, in
 - Replace this README with `docs/templates/readme.md` filled in. On an existing
   repo, keep what your own README already said and only add the sections it
   lacked.
-- `docs/specs/` ships empty. Specs arrive with `/sdd-sync`, or are written here
+- `specs/` ships empty. Specs arrive with `/sdd-sync`, or are written here
   when there is no Spec Repository — delete any directory left over from
   testing the template, but there is no example to remove.
 
@@ -301,17 +301,21 @@ docs/
   constitution.md      durable principles; read when a spec is silent
   delivery.md          branches, feature flags, versioning, releases
   spec-repo.md         how specs are consumed: config, ids, mirror, drift
+  agents/              roles for a subagent or chat mode — ships empty
+  skills/              model-invoked how-to guides, one SKILL.md per dir — ships empty
+  standards/           always-on rules scoped to a file glob — ships empty
   templates/           plan.md · tasks.md · spec.link.yml
                        spec.md · wireframe.html — only for repos owning their specs
                        readme.md — the project README, written by /sdd-init
                        cross-repo.md — /sdd-init copies it in for multi-repo products
-  specs/
-    NNN-slug/  one directory per feature
-      spec.md          mirrored, read-only
-      spec.link.yml    source id, ref, commit, checksums
-      wireframe.html   mirrored, only when the feature has screens
-      plan.md          ours
-      tasks.md         ours
+                       agent.md · skill.md · standard.md — blank templates for the above
+specs/
+  NNN-slug/  one directory per feature
+    spec.md          mirrored, read-only
+    spec.link.yml    source id, ref, commit, checksums
+    wireframe.html   mirrored, only when the feature has screens
+    plan.md          ours
+    tasks.md         ours
 scripts/
   sdd-onboard.sh       deterministic generator for local agent adapters
   sdd-doctor.sh        offline diagnosis of tools, adapters and spec source
@@ -324,7 +328,7 @@ scripts/
 ```
 
 That is the whole repo. `onboard` adds, **outside version control**, the adapter
-your tool needs and its `sdd-*` command files.
+your tool needs and its `sdd-*` command, agent, skill and standard files.
 
 </details>
 
@@ -363,7 +367,7 @@ content, so they belong to whoever is using that tool, not to the repo.
 folds them into `AGENTS.md` and `docs/constitution.md`.
 
 Your existing specs are a separate job: **`/sdd-adopt <path>`**, run once per
-spec, converts one of them into `docs/specs/NNN-slug/`.
+spec, converts one of them into `specs/NNN-slug/`.
 
 It triages before it converts, and that is the point:
 

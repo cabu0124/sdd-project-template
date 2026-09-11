@@ -1,6 +1,6 @@
 # /sdd-tasks — break a plan into commit-sized units
 
-**Goal.** Write `docs/specs/<NNN-slug>/tasks.md`: an ordered list where every
+**Goal.** Write `specs/<NNN-slug>/tasks.md`: an ordered list where every
 item can be implemented and verified on its own.
 
 Argument: a spec id.
@@ -49,7 +49,7 @@ depends on how much the user wants landing in one commit.
 
 ## Writes
 
-`docs/specs/<NNN-slug>/tasks.md`. No code.
+`specs/<NNN-slug>/tasks.md`. No code.
 
 ## Stops when
 
