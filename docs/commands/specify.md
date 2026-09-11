@@ -57,7 +57,9 @@ of being guessed. That is what the section is for, and `/sdd-clarify` closes it.
    its result is observable. If you cannot say how a requirement would be
    verified, it is not a requirement yet — rewrite it. Write them as product
    behaviour: an endpoint, a framework, a table or a repository name in a
-   requirement is a plan decision that leaked into the spec.
+    requirement is a plan decision that leaked into the spec. Fill the metadata
+    header — owner, dates, and the repositories expected to implement it, or
+    `unknown` when nobody has decided yet.
 5. Wireframe — only when `AGENTS.md` says this project has a user interface *and*
    this feature puts something on a screen. Copy `docs/templates/wireframe.html`
    into the spec directory and draw it: one section per screen in scope and no
@@ -71,8 +73,14 @@ of being guessed. That is what the section is for, and `/sdd-clarify` closes it.
 6. Cross-repo: one spec for the product, the same in every repo that implements
    it. Do not split the work between repos here and do not write a contract —
    both are `/sdd-plan`'s job. If a sibling repo already has this spec, copy it
-   across instead of writing a second one. Follow `docs/cross-repo.md` if present.
-7. Report the requirements and anything left open.
+   across instead of writing a second one. When `## Consumers` names more than
+   one repository, fill `## Verification` with one row per acceptance criterion
+   and name the `Verifier:` responsible for integrated criteria. A single-repo
+   spec deletes the section and the header line. Follow `docs/cross-repo.md` if
+   present.
+7. Run `bash scripts/spec-check.sh --root docs/specs docs/specs/<NNN-slug>` and
+   fix every reported structural or traceability error.
+8. Report the requirements and anything left open.
 
 ## Writes
 

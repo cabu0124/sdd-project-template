@@ -9,9 +9,13 @@ Argument: a spec id.
 
 ## Read first
 
-- The spec. If `status:` is not `approved`, or `## Open questions` is not empty,
-  stop and say so. That gate is the point of the method, not a formality. A spec
-  that is not here yet is not written here: `/sdd-sync <id>` brings it in.
+- The spec. If `status:` is neither `approved` nor `done`, or `## Open questions`
+  is not empty, stop and say so. That gate is the point of the method, not a
+  formality: `draft` and `review` are still being written, and `superseded` was
+  replaced — plan against the successor it names. `done` is published work that
+  was delivered, not a contract that expired, so a repository joining the
+  product later plans against it like any other. A spec that is not here yet is
+  not written here: `/sdd-sync <id>` brings it in.
 - `spec.link.yml`, when the spec has one — it is mirrored from the Spec
   Repository. Check it with `scripts/spec-hash.sh --check docs/specs/<NNN-slug>`:
   a mismatch means the mirror was edited here, and that is a stop, not a detail.
@@ -54,11 +58,14 @@ convention here, and reading it is faster than asking about it.
    criterion scoped here.
 5. Prefer the smallest thing that satisfies the spec. An abstraction the spec
    does not ask for is permanent cost paid for a guess.
-6. If this repo owns a contract other repos consume, define it exactly here:
-   endpoints, payloads, status codes, error shapes, config keys. Consumers copy
-   this block verbatim, so leave nothing implied. A contract this repo only
-   consumes is copied verbatim into the same section, marked given and naming its
-   owner — it is an input, so if it is wrong, stop and ask rather than adjust it.
+6. If this repo owns a contract other repos consume, define it exactly here and
+   publish it as an artifact at a path in this repo: endpoints, payloads, status
+   codes, error shapes, config keys. Leave nothing implied. A contract this repo
+   only consumes is recorded as a **reference** — the owning repo, the path and
+   the revision built against — never as a second copy of the text, because a
+   copy cannot tell anyone the owner has changed it. Pair it with a contract
+   test that fails when this repo no longer matches the revision it pinned. It
+   is an input, so if it is wrong, stop and ask rather than adjust it.
 7. Decide the rollout. A spec that cannot land usable in one merge, or that
    changes behaviour users already rely on, ships behind a flag named after the
    spec and off by default; `## Rollout` records the flag and the condition that

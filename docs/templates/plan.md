@@ -34,13 +34,19 @@ Anything another component or person depends on. Delete if none.
 A contract is technology, so it lives here and never in the spec. Two kinds, and
 a plan can carry both:
 
-- **Owned** — defined here. Consumer repos copy this block verbatim into their
-  own plan, so leave nothing implied.
-- **Given** — owned by another repo. Copy it verbatim and name the owner. It is
-  an input, not a decision: if it is wrong, incomplete or contradicted by
-  reality, STOP and ask. Never adjust it locally.
+- **Owned** — defined here, and published as an artifact at a path in this repo
+  so consumers reference one definition rather than each keeping a copy.
+- **Given** — owned by another repo. Record the reference and the revision this
+  repo builds against, not a second copy of the text: a copy cannot tell you the
+  owner changed it. It is an input, so if it is wrong, incomplete or
+  contradicted by reality, STOP and ask. Never adjust it locally.
 
-See `docs/cross-repo.md`, if present.>
+A given contract needs a contract test here, proving this repo still matches the
+revision it pinned. See `docs/cross-repo.md`, if present.>
+
+- **Owned:** `<path in this repo>` — <what it defines>
+- **Given:** `<repo>` · `<path>` @ `<revision>` — <what this repo consumes>
+  - Contract test: `<path>`
 
 ## Rollout
 

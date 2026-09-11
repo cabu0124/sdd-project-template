@@ -109,9 +109,10 @@ spec_repo:
 /sdd-sync 014-password-reset
 ```
 
-It resolves `path` first (no network, and it says so), reads
-`specs/014-password-reset/` at `main`, reports the spec's title, status and
-requirements, takes the next free local number — `007` — and writes:
+It confirms that `path` has the configured `remote` as its origin, refreshes
+`main` from that authority, reads `specs/014-password-reset/` at the resolved
+commit, reports the spec's title, status and requirements, takes the next free
+local number — `007` — and writes:
 
 ```text
 docs/specs/007-password-reset/
@@ -148,7 +149,7 @@ those hashes are checked on every re-sync and by `/sdd-analyze`.
 /sdd-plan 007
 ```
 
-It refuses a spec that is not `approved` upstream, checks the mirror against its
+It refuses a spec that is not published upstream, checks the mirror against its
 hashes, reads the code that will change, asks only what the code cannot answer,
 and writes `docs/specs/007-password-reset/plan.md`:
 
@@ -172,10 +173,14 @@ unauthenticated, reusing the `AuthLayout` and the form primitives already in
 
 ## Contract and schema changes
 
-**Given** — owned by `acme-api` (its plan for 012), copied verbatim:
+**Given** — owned by `acme-api`, referenced at the revision this repo builds
+against rather than copied into this plan:
 
-    POST /auth/reset-request  { email }        → 202, always
-    POST /auth/reset          { token, pass }  → 204 | 410 expired | 400 invalid
+    acme-api · contracts/auth-reset.yaml @ v2.3.0
+      POST /auth/reset-request  { email }        → 202, always
+      POST /auth/reset          { token, pass }  → 204 | 410 expired | 400 invalid
+
+    Contract test: tests/contract/auth-reset.spec.ts
 
 ## Rollout
 
@@ -259,5 +264,5 @@ The fix for a wrong spec is always upstream, where it reaches every repository.
 | `spec.md`, `wireframe.html` | owner | read-only mirror |
 | Status, amendments | owner | recorded in `spec.link.yml` |
 | `plan.md`, `tasks.md`, code | never | owner |
-| The contract | never | owned by `acme-api`, copied verbatim |
+| The contract | never | owned by `acme-api`, referenced at a pinned revision |
 | Spec number | `014` | `007`, same slug |
