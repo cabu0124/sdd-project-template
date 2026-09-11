@@ -6,14 +6,15 @@
 #   scripts/spec-sync.sh --list                  # the spec ids available upstream
 #   scripts/spec-sync.sh <id>                    # preview a new sync or re-sync
 #   scripts/spec-sync.sh --write <commit> <id>  # apply exactly what was previewed
+#   scripts/spec-sync.sh --offline <id>          # use the last remote ref cached at path
 #
 # Everything here is the same every time: resolving a ref, reading a blob,
 # writing a hash. What is left to /sdd-sync is the part that needs judgement —
 # reading the spec, and saying whether a changed requirement invalidates the
 # plan and the tasks built on it.
 #
-# It never writes plan.md, tasks.md or code, and never touches the Spec
-# Repository. See docs/spec-repo.md.
+# It never writes plan.md, tasks.md, code, or source spec content. A matching
+# path cache may receive fetched Git objects and refs. See docs/spec-repo.md.
 
 set -euo pipefail
 
@@ -35,6 +36,7 @@ config_field() {
 }
 
 write=0
+offline=0
 mode=sync
 id=""
 requested_commit=""
@@ -47,6 +49,7 @@ while [ "$#" -gt 0 ]; do
       [ "$#" -gt 0 ] || die "--write needs the commit shown by the preview" 2
       requested_commit=$1
       ;;
+    --offline) offline=1 ;;
     --list|-l) mode=list ;;
     --help|-h) awk 'NR > 1 && /^#/ { sub(/^#[[:space:]]?/, ""); print; next } NR > 1 { exit }' "$0"; exit 0 ;;
     -*) die "unknown option: $1" 2 ;;
@@ -75,8 +78,8 @@ for pair in "ref:$ref" "specs_dir:$specs_dir"; do
   esac
 done
 
-# `path` first: no network, and it can read commits that exist there but have
-# not been pushed. `remote` otherwise.
+# With both configured, `remote` is the authority and `path` is only a cache
+# when its origin URL matches exactly. With no remote, path is a local authority.
 src=""
 tmp=""
 stage=""
@@ -95,19 +98,35 @@ trap cleanup EXIT
 case "$path" in ''|*'<'*) path="" ;; esac
 case "$remote" in ''|*'<'*) remote="" ;; esac
 
+path_valid=0
 if [ -n "$path" ] && git -C "$path" rev-parse --git-dir >/dev/null 2>&1; then
-  src=$path
-  kind=path
-  source_kind="path $path"
-  git -C "$src" fetch --quiet >/dev/null 2>&1 || true
-elif [ -n "$remote" ]; then
+  path_valid=1
+fi
+
+if [ -n "$remote" ] && [ "$path_valid" -eq 1 ]; then
+  path_remote=$(git -C "$path" remote get-url origin 2>/dev/null || true)
+  if [ "$path_remote" = "$remote" ]; then
+    src=$path
+    kind=cache
+    source_kind="path cache $path for remote $remote"
+  else
+    echo "note: ignoring path $path because its origin '$path_remote' does not match remote '$remote'." >&2
+  fi
+fi
+
+if [ -z "$src" ] && [ -n "$remote" ]; then
+  [ "$offline" -eq 0 ] || die "--offline needs path to be a git repository whose origin matches remote"
   tmp=$(mktemp -d)
   git -C "$tmp" init --quiet spec-repo
   src="$tmp/spec-repo"
   git -C "$src" remote add origin "$remote"
   kind=remote
   source_kind="remote $remote"
-else
+elif [ -z "$src" ] && [ "$path_valid" -eq 1 ]; then
+  src=$path
+  kind=local
+  source_kind="local-only path $path"
+elif [ -z "$src" ]; then
   die "neither path nor remote resolves to a git repository — check $CONFIG"
 fi
 
@@ -118,15 +137,23 @@ if [ "$kind" = remote ]; then
   git -C "$src" fetch --quiet --depth 1 origin "$target" 2>/dev/null \
     || die "could not fetch $target from $remote"
   commit=$(git -C "$src" rev-parse --verify FETCH_HEAD^{commit})
+elif [ "$kind" = cache ] && [ "$offline" -eq 0 ]; then
+  git -C "$src" fetch --quiet origin "$target" 2>/dev/null \
+    || die "could not refresh $target from $remote; use --offline only to accept the last cached remote ref"
+  commit=$(git -C "$src" rev-parse --verify FETCH_HEAD^{commit})
+elif [ "$kind" = cache ]; then
+  offline_target=$target
+  if git -C "$src" show-ref --verify --quiet "refs/remotes/origin/$target"; then
+    offline_target="refs/remotes/origin/$target"
+  elif git -C "$src" show-ref --verify --quiet "refs/tags/$target"; then
+    offline_target="refs/tags/$target"
+  fi
+  commit=$(git -C "$src" rev-parse --verify "$offline_target^{commit}" 2>/dev/null) \
+    || die "$target is not cached in $path"
+  echo "note: offline mode; freshness against $remote was not verified." >&2
 else
   commit=$(git -C "$src" rev-parse --verify "$target^{commit}" 2>/dev/null) \
     || die "$target does not resolve in $path"
-  # Reading the local ref is deliberate; saying so is what stops a stale
-  # checkout from looking like a changed spec.
-  if published=$(git -C "$src" rev-parse --verify --quiet "origin/$ref^{commit}"); then
-    [ "$published" != "$commit" ] \
-      && echo "note: $ref here is $commit, origin/$ref is $published. Reading the local one." >&2
-  fi
 fi
 
 if [ -n "$requested_commit" ] && [ "$commit" != "$requested_commit" ]; then

@@ -109,9 +109,10 @@ spec_repo:
 /sdd-sync 014-password-reset
 ```
 
-It resolves `path` first (no network, and it says so), reads
-`specs/014-password-reset/` at `main`, reports the spec's title, status and
-requirements, takes the next free local number — `007` — and writes:
+It confirms that `path` has the configured `remote` as its origin, refreshes
+`main` from that authority, reads `specs/014-password-reset/` at the resolved
+commit, reports the spec's title, status and requirements, takes the next free
+local number — `007` — and writes:
 
 ```text
 docs/specs/007-password-reset/

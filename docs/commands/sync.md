@@ -20,6 +20,7 @@ already here is a re-sync, and it reports the diff before touching anything.
 scripts/spec-sync.sh --list           # the ids available upstream
 scripts/spec-sync.sh <id>             # previews a new sync or re-sync; writes nothing
 scripts/spec-sync.sh --write <sha> <id> # applies exactly the revision previewed
+scripts/spec-sync.sh --offline <id>    # previews the last remote ref cached at path
 ```
 
 It resolves the Spec Repository to one commit, reads every mirrored file at that
@@ -27,6 +28,11 @@ commit, picks the local number, and writes the mirror with its provenance and
 hashes. Do not reimplement any of it, and never copy a spec through a reply:
 content that passes through you is content that can be reflowed, and a mirror
 that differs by one whitespace fails its hash for every consumer.
+
+With both `remote` and `path`, the remote is authoritative and the path is only
+a cache when its `origin` matches exactly. Use `--offline` only after saying
+that remote freshness cannot be checked; it never silently replaces normal
+sync. A path without a remote is an explicit local-only source.
 
 Its exit code is the whole interface:
 
@@ -54,7 +60,8 @@ Its exit code is the whole interface:
 ## Steps
 
 1. `scripts/spec-sync.sh --list` when you have no id, or to confirm the one you
-   were given exists upstream.
+   were given exists upstream. If the remote is unavailable and the user accepts
+   cached freshness, repeat with `--offline` and report that limitation.
 2. `scripts/spec-sync.sh <id>`. It writes nothing. Report the source it read,
    the commit it resolved, and the proposed local directory.
 3. Read the spec. Report its title, status, requirements and acceptance
@@ -83,8 +90,8 @@ Its exit code is the whole interface:
 ## Writes
 
 Through the script: `docs/specs/<NNN-slug>/spec.md`, its `wireframe.html` when
-the source has one, and `spec.link.yml`. Nothing in the Spec Repository — this
-command only reads it.
+the source has one, and `spec.link.yml`. It never edits source specs or their
+working tree. A matching `path` cache may receive fetched Git objects and refs.
 
 ## Stops when
 

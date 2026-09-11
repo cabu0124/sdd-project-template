@@ -141,15 +141,16 @@ repository, a ref and a directory:
 # .sdd/config.yml
 spec_repo:
   name: acme-specs
-  path: ../acme-specs                        # tried first; needs no network
-  remote: git@github.com:acme/acme-specs.git # fallback
+  path: ../acme-specs                        # optional cache of this remote
+  remote: git@github.com:acme/acme-specs.git # authority when configured
   ref: main                                  # a branch to track, or a tag to pin
   specs_dir: specs
   mirror: [spec.md, wireframe.html]
 ```
 
-`/sdd-sync <id>` resolves `path`, then `remote`, reads the spec at one resolved
-commit, copies it into `docs/specs/<NNN-slug>/` **byte for byte**, and writes
+`/sdd-sync <id>` resolves the authoritative remote ref, optionally through a
+matching local path cache, reads the spec at one commit, copies it into
+`docs/specs/<NNN-slug>/` **byte for byte**, and writes
 `spec.link.yml` beside it — source id, ref, commit, and a `sha256` per file.
 That mechanical half is `scripts/spec-sync.sh`, which the command runs rather
 than reimplements; what the command adds is the judgement the script refuses to
@@ -313,7 +314,9 @@ docs/
       tasks.md         ours
 scripts/
   sdd-onboard.sh       deterministic generator for local agent adapters
+  sdd-doctor.sh        offline diagnosis of tools, adapters and spec source
   spec-sync.sh         previews and applies mirrors at an exact source revision
+  test-spec-sync.sh    exercises remote, cache, offline and local-only sources
   spec-check.sh        validates local and mirrored spec structure
   test-spec-check.sh   exercises the validator contract with isolated fixtures
   spec-hash.sh         records and verifies mirrored bytes and provenance

@@ -94,14 +94,18 @@ has no tests.
    one applies to every task it belongs in `AGENTS.md`; otherwise leave it in
    `docs/` and give it a row in the "Read on demand" table.
 7. Fill `.sdd/config.yml` with the answer about specs — every `<...>` replaced,
-   or the whole block reduced to `spec_repo: none`. Verify it before reporting
-   it: `scripts/spec-sync.sh --list` must name the source, the commit and the
-   spec ids it found. With only a `remote` that cannot be reached from here, say
-   it is unverified rather than claiming it works. `none` means `/sdd-specify`
-  writes specs here. Keep the sync command, provenance template, scripts and
-  checks in place but inactive: `spec_repo: none` is the switch. Adding a Spec
-  Repository later is this command again, and must not depend on restoring
-  files that an earlier run deleted.
+   or the whole block reduced to `spec_repo: none`. With both `remote` and
+   `path`, remote is authoritative and path is only its cache: its `origin` must
+   match remote exactly. With no remote, path is explicitly local-only. Run
+   `scripts/sdd-doctor.sh`, then verify an external source with
+   `scripts/spec-sync.sh --list`; it must name the source, commit and spec ids.
+   With a remote that cannot be reached, say it is unverified rather than
+   silently using path; `--offline` is a separate, explicit acceptance of the
+   last cached remote ref. `none` means `/sdd-specify` writes specs here. Keep
+   the sync command, provenance template, scripts and checks in place but
+   inactive: `spec_repo: none` is the switch. Adding a Spec Repository later is
+   this command again, and must not depend on restoring files that an earlier
+   run deleted.
 8. If the product spans repositories that cannot be built from here, copy
    `docs/templates/cross-repo.md` to `docs/cross-repo.md` — that is where the
    loop's other commands look for it. A single-repo product does not copy it.

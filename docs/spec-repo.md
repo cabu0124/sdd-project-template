@@ -46,16 +46,21 @@ the template.
 ```yaml
 spec_repo:
   name: acme-specs
-  path: ../acme-specs                        # tried first; needs no network
-  remote: git@github.com:acme/acme-specs.git # fallback
+  path: ../acme-specs                        # optional cache of this remote
+  remote: git@github.com:acme/acme-specs.git # authority when configured
   ref: main                                  # branch to track, or tag to pin
   specs_dir: specs
   mirror: [spec.md, wireframe.html]
 ```
 
-**Resolution order:** `path` if it exists on disk, then `remote`, then stop and
-report. Both are read with `git` at `ref`, never from a working tree, so two
-repositories syncing the same id get the same bytes.
+**Authority:** when `remote` is configured, it defines the published ref. `path`
+is used only when its `origin` URL exactly matches `remote`; normal sync fetches
+that remote ref, so an unpublished local commit cannot become a mirror. A
+different origin is ignored. `scripts/spec-sync.sh --offline <id>` is the
+explicit exception: it reads the last remote ref cached at the matching path and
+reports that freshness was not verified. When `remote` is empty, a valid `path`
+is an intentional local-only authority. Every source is read through Git at a
+resolved commit, never from its working tree.
 
 **`ref` is a policy choice.** A branch (`main`) tracks specs as they are
 approved — right for a team that moves together. A tag (`v1.4.0`) pins this
