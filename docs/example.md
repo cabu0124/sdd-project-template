@@ -172,10 +172,14 @@ unauthenticated, reusing the `AuthLayout` and the form primitives already in
 
 ## Contract and schema changes
 
-**Given** — owned by `acme-api` (its plan for 012), copied verbatim:
+**Given** — owned by `acme-api`, referenced at the revision this repo builds
+against rather than copied into this plan:
 
-    POST /auth/reset-request  { email }        → 202, always
-    POST /auth/reset          { token, pass }  → 204 | 410 expired | 400 invalid
+    acme-api · contracts/auth-reset.yaml @ v2.3.0
+      POST /auth/reset-request  { email }        → 202, always
+      POST /auth/reset          { token, pass }  → 204 | 410 expired | 400 invalid
+
+    Contract test: tests/contract/auth-reset.spec.ts
 
 ## Rollout
 
@@ -259,5 +263,5 @@ The fix for a wrong spec is always upstream, where it reaches every repository.
 | `spec.md`, `wireframe.html` | owner | read-only mirror |
 | Status, amendments | owner | recorded in `spec.link.yml` |
 | `plan.md`, `tasks.md`, code | never | owner |
-| The contract | never | owned by `acme-api`, copied verbatim |
+| The contract | never | owned by `acme-api`, referenced at a pinned revision |
 | Spec number | `014` | `007`, same slug |

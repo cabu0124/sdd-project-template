@@ -154,5 +154,6 @@ stops it recurring.
 
 Contracts between consumers — endpoints, payloads, config keys — are technology,
 so they never enter the Spec Repository. They are owned by one development repo,
-defined in its `plan.md`, and copied verbatim into the consumers' plans. Full
-rules in `docs/cross-repo.md`, when the product spans repos.
+published as an artifact there, and **referenced** by the consumers at a pinned
+revision rather than copied into each of their plans. Full rules in
+`docs/cross-repo.md`, when the product spans repos.

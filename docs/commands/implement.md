@@ -1,9 +1,11 @@
 # /sdd-implement — build the next task, and verify when the list is done
 
 **Goal.** Move `tasks.md` forward by exactly one task. When no unchecked task is
-left, verify the spec against its acceptance criteria instead.
+left — or when asked — verify the spec against the acceptance criteria this
+repository answers for.
 
-Argument: a spec id.
+Argument: a spec id, and optionally `verify` — `/sdd-implement 007 verify` runs
+the verification pass on demand, without waiting for the list to empty.
 
 ## Read first
 
@@ -38,9 +40,13 @@ re-opening them here is how a plan quietly stops being the plan.
    with a `spec.link.yml` beside it — is corrected in the Spec Repository and
    re-synced, so every consumer gets the same correction.
 
-## When every task is checked
+## Verifying
 
-Verify instead of implementing:
+On the run that finds no unchecked task left, or whenever the argument asks for
+it. Verification says the spec is met; it is not a reward for an empty list, and
+an open rollout task is not a reason to withhold it — `docs/delivery.md` puts
+the flag's removal in a later release, which is *after* the criteria have to
+hold.
 
 1. Take the acceptance criteria the plan scopes to this repo, one at a time. For
    each, report the criterion, how you checked it, and the actual result. Run the
@@ -51,7 +57,16 @@ Verify instead of implementing:
    repo and leave them unchecked here; this repo is not blocked on them.
 3. Report failures as failures, with the output. Do not fix anything in the same
    run.
-4. Leave `status:` alone. Marking a spec `done` is the user's call.
+4. Report each passing criterion with the link that proves it — the CI run, the
+   pipeline job. When the spec is mirrored and spans repositories, that link is
+   what its `## Verification` ledger records, and the Spec Repository will not
+   move the spec to `done` without it. Give the link, never the output.
+5. A criterion that only holds with another repository running is not proved by
+   this repo's suite against a mock, and reporting it as met here is how two
+   green repositories ship a broken product. Say so, and name the verifier the
+   spec header gives.
+6. Leave `status:` alone. Marking a spec `done` is the user's call, in the Spec
+   Repository.
 
 ## Writes
 
@@ -61,4 +76,5 @@ change to it. Never a mirrored `spec.md`, `wireframe.html` or `spec.link.yml`.
 ## Stops when
 
 One task is checked off and its tests pass — or, on the verification run, every
-acceptance criterion has been reported with its actual result.
+acceptance criterion scoped here has been reported with its actual result and,
+when it passed, the link that proves it.

@@ -61,9 +61,11 @@ Check in this order, and report findings grouped by severity:
    with the source at the configured `ref`: an upstream change that touches a
    requirement or an acceptance criterion invalidates the plan and the tasks
    built on it. Neither is fixed here — `/sdd-sync <id>` is.
-9. **Contract drift** — if the plan carries a contract another repo owns, compare
-   it with the current one from that repo and list every difference and what it
-   breaks here. A diverged contract is a decision for the user, not a local edit.
+9. **Contract drift** — if the plan carries a contract another repo owns, read it
+   at the revision the plan pinned and compare that with the owner's current
+   one. List every difference and what it breaks here, and say whether a
+   contract test in this repo would have caught it. A diverged contract is a
+   deliberate upgrade and a decision for the user, not a local edit.
 10. **State** — what is already implemented, so the run resumes rather than
    restarts.
 
