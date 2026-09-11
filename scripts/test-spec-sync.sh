@@ -28,7 +28,7 @@ printf '%s\n' '# unpublished local change' >> "$work/cache/specs/001-one/spec.md
 git -C "$work/cache" commit -qam unpublished
 unpublished=$(git -C "$work/cache" rev-parse HEAD)
 
-mkdir -p "$work/project/.sdd" "$work/project/docs/specs" "$work/project/scripts"
+mkdir -p "$work/project/.sdd" "$work/project/specs" "$work/project/scripts"
 cp "$sync_script" "$hash_script" "$work/project/scripts/"
 git -C "$work/project" init -q
 

@@ -180,7 +180,7 @@ git -C "$src" cat-file -e "$commit:$specs_dir/$id/spec.md" 2>/dev/null || {
 # changes once a plan, a branch and commits refer to it.
 dir=""
 shopt -s nullglob
-for link in docs/specs/*/spec.link.yml; do
+for link in specs/*/spec.link.yml; do
   [ "$(bash "$SPEC_HASH" --source-id "$link" 2>/dev/null)" = "$id" ] || continue
   dir=$(dirname "$link")
   break
@@ -188,14 +188,14 @@ done
 
 if [ -z "$dir" ]; then
   max=0
-  for existing in docs/specs/*/; do
+  for existing in specs/*/; do
     n=$(basename "$existing" | sed -n 's/^\([0-9][0-9]*\)-.*/\1/p')
     [ -n "$n" ] || continue
     n=$((10#$n))
     [ "$n" -gt "$max" ] && max=$n
   done
   slug=$(printf '%s' "$id" | sed 's/^[0-9][0-9]*-//')
-  dir=$(printf 'docs/specs/%03d-%s' $((max + 1)) "$slug")
+  dir=$(printf 'specs/%03d-%s' $((max + 1)) "$slug")
   fresh=1
 else
   fresh=0

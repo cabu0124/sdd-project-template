@@ -1,6 +1,6 @@
 # /sdd-specify — write a new spec
 
-**Goal.** Turn a feature request into `docs/specs/<NNN-slug>/spec.md`: WHAT and
+**Goal.** Turn a feature request into `specs/<NNN-slug>/spec.md`: WHAT and
 WHY, testable and approvable. No technical decisions and no repository
 boundaries — both belong to `/sdd-plan`.
 
@@ -23,7 +23,7 @@ Read `.sdd/config.yml`.
 
 - `AGENTS.md` — scope, boundaries, and what "done" means here.
 - `docs/constitution.md` — constraints an individual spec cannot override.
-- `docs/specs/` — the next free number, and whether an existing spec already
+- `specs/` — the next free number, and whether an existing spec already
   covers part of this. Overlapping scope is a question, not a silent merge.
 - `docs/templates/spec.md` — the structure to produce.
 - `docs/templates/wireframe.html` — only if `AGENTS.md` says this project has a
@@ -50,7 +50,7 @@ of being guessed. That is what the section is for, and `/sdd-clarify` closes it.
 1. Read, then restate the request in two or three sentences and name what you
    understood to be out of scope. A wrong reading surfaces here, cheaply.
 2. Ask what is missing.
-3. Take the next free `NNN` in `docs/specs/` — zero-padded, never reused — and a
+3. Take the next free `NNN` in `specs/` — zero-padded, never reused — and a
    short slug. The number is the permanent id for commits, branches and issues.
 4. Write `spec.md` from the template. Requirements are numbered `R1`, `R2`, …;
    every acceptance criterion names the requirement it verifies and is phrased so
@@ -78,13 +78,13 @@ of being guessed. That is what the section is for, and `/sdd-clarify` closes it.
    and name the `Verifier:` responsible for integrated criteria. A single-repo
    spec deletes the section and the header line. Follow `docs/cross-repo.md` if
    present.
-7. Run `bash scripts/spec-check.sh --root docs/specs docs/specs/<NNN-slug>` and
+7. Run `bash scripts/spec-check.sh --root specs specs/<NNN-slug>` and
    fix every reported structural or traceability error.
 8. Report the requirements and anything left open.
 
 ## Writes
 
-`docs/specs/<NNN-slug>/spec.md`, plus `wireframe.html` beside it when step 5
+`specs/<NNN-slug>/spec.md`, plus `wireframe.html` beside it when step 5
 applies. Nothing else — no `plan.md`, no `tasks.md`, no code.
 
 ## Stops when

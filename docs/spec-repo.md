@@ -29,7 +29,7 @@ the Spec Repository decide how every consumer builds.
 Spec Repository            this repository
   specs/001-password-reset
         │  /sdd-sync
-        └──────────────▶ docs/specs/007-password-reset/
+        └──────────────▶ specs/007-password-reset/
                            spec.md          mirror, byte-identical
                            spec.link.yml    where it came from
                            wireframe.html   mirror, when the spec has one
@@ -87,7 +87,7 @@ mapping, so nothing depends on the numbers matching.
 
 ## The mirror is read-only
 
-The copy under `docs/specs/` exists so the spec is reviewable in a pull request,
+The copy under `specs/` exists so the spec is reviewable in a pull request,
 readable offline, and versioned with the plan that was written against it. It is
 still not yours: `spec.link.yml` carries a `sha256` per mirrored file, and
 `/sdd-sync` and `/sdd-analyze` compare against it.
@@ -100,7 +100,7 @@ job:
 scripts/spec-sync.sh --list                          # the spec ids upstream
 scripts/spec-sync.sh <id>                            # preview; write nothing
 scripts/spec-sync.sh --write <sha> <id>              # apply the reviewed revision
-scripts/spec-hash.sh docs/specs/007-password-reset   # the files: block to record
+scripts/spec-hash.sh specs/007-password-reset   # the files: block to record
 scripts/sdd-check.sh                                 # what CI runs
 ```
 
