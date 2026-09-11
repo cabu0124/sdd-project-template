@@ -148,11 +148,14 @@ spec_repo:
   mirror: [spec.md, wireframe.html]
 ```
 
-`/sdd-sync <id>` resolves `path`, then `remote`, reads the spec at `ref`, copies
-it into `docs/specs/<NNN-slug>/` **byte for byte**, and writes `spec.link.yml`
-beside it — source id, ref, commit, and a `sha256` per file. That copy is
-reviewable in a pull request, readable offline, and versioned next to the plan
-written against it.
+`/sdd-sync <id>` resolves `path`, then `remote`, reads the spec at one resolved
+commit, copies it into `docs/specs/<NNN-slug>/` **byte for byte**, and writes
+`spec.link.yml` beside it — source id, ref, commit, and a `sha256` per file.
+That mechanical half is `scripts/spec-sync.sh`, which the command runs rather
+than reimplements; what the command adds is the judgement the script refuses to
+make — whether a changed requirement invalidates the plan built on it. The copy
+is reviewable in a pull request, readable offline, and versioned next to that
+plan.
 
 **The mirror is read-only.** Its hashes are checked by `/sdd-sync`,
 `/sdd-analyze` and the `spec-mirror` job — all through `scripts/spec-hash.sh`,

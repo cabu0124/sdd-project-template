@@ -95,11 +95,12 @@ has no tests.
    `docs/` and give it a row in the "Read on demand" table.
 7. Fill `.sdd/config.yml` with the answer about specs — every `<...>` replaced,
    or the whole block reduced to `spec_repo: none`. Verify it before reporting
-   it: with a `path`, `git -C <path> ls-tree <ref>:<specs_dir>` must list the
-   specs; with only a `remote`, say it is unverified rather than claiming it
-   works. `none` means `/sdd-specify` writes specs here — then delete
-   `docs/commands/sync.md`, `docs/spec-repo.md`, `docs/templates/spec.link.yml`,
-   `scripts/spec-hash.sh`, `.github/workflows/spec-mirror.yml`
+   it: `scripts/spec-sync.sh --list` must name the source, the commit and the
+   spec ids it found. With only a `remote` that cannot be reached from here, say
+   it is unverified rather than claiming it works. `none` means `/sdd-specify`
+   writes specs here — then delete `docs/commands/sync.md`, `docs/spec-repo.md`,
+   `docs/templates/spec.link.yml`, `scripts/spec-sync.sh`, `scripts/spec-hash.sh`,
+   `scripts/sdd-check.sh`, `.github/workflows/spec-mirror.yml`
    and the `docs/spec-repo.md` mention from the "Read on demand" table, and say
    in the report that adding a Spec Repository later is this command again.
 8. If the product spans repositories that cannot be built from here, copy
