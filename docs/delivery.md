@@ -24,7 +24,7 @@ feature/* ──▶ develop ──▶ main ──▶ deploy ──▶ turn the f
 - **`main` only ever receives `develop` or a `hotfix/*`.** Anything else is a
   commit that reached production without being tested next to the rest.
 - **The spec number is the branch name.** `feature/007-password-reset` ties the
-  branch, the pull request, the commits and `docs/specs/007-password-reset/`
+  branch, the pull request, the commits and `specs/007-password-reset/`
   together without a tracker in between.
 - **Temporary means temporary.** `feature/*`, `fix/*` and `hotfix/*` are deleted
   on merge — by hand, from the pull request. A branch alive for a month is a

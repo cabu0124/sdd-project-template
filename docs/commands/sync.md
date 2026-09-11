@@ -1,7 +1,7 @@
 # /sdd-sync — bring a spec in from the Spec Repository
 
 **Goal.** Copy one spec from the product's Spec Repository into
-`docs/specs/<NNN-slug>/`, verbatim, and record where it came from in
+`specs/<NNN-slug>/`, verbatim, and record where it came from in
 `spec.link.yml`. After this, `/sdd-plan` has something to plan against.
 
 The spec is an **input** to this repository, not an artifact of it. Syncing it
@@ -89,7 +89,7 @@ Its exit code is the whole interface:
 
 ## Writes
 
-Through the script: `docs/specs/<NNN-slug>/spec.md`, its `wireframe.html` when
+Through the script: `specs/<NNN-slug>/spec.md`, its `wireframe.html` when
 the source has one, and `spec.link.yml`. It never edits source specs or their
 working tree. A matching `path` cache may receive fetched Git objects and refs.
 

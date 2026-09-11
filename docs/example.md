@@ -115,7 +115,7 @@ commit, reports the spec's title, status and requirements, takes the next free
 local number — `007` — and writes:
 
 ```text
-docs/specs/007-password-reset/
+specs/007-password-reset/
   spec.md          byte-identical to acme-specs
   wireframe.html   byte-identical
   spec.link.yml
@@ -151,7 +151,7 @@ those hashes are checked on every re-sync and by `/sdd-analyze`.
 
 It refuses a spec that is not published upstream, checks the mirror against its
 hashes, reads the code that will change, asks only what the code cannot answer,
-and writes `docs/specs/007-password-reset/plan.md`:
+and writes `specs/007-password-reset/plan.md`:
 
 ```markdown
 # Plan — Spec 007

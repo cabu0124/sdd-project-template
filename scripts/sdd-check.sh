@@ -33,7 +33,7 @@ case "${1:-}" in
   *) echo "sdd-check: unknown option: $1" >&2; exit 2 ;;
 esac
 
-run "Specs have valid structure, statuses and traceability" bash scripts/spec-check.sh --root docs/specs
+run "Specs have valid structure, statuses and traceability" bash scripts/spec-check.sh
 run "Spec validator behavioral fixtures" bash scripts/test-spec-check.sh
 run "Spec source authority fixtures" bash scripts/test-spec-sync.sh
 run "Mirrored specs match their hashes and name their source" bash scripts/spec-hash.sh --check
