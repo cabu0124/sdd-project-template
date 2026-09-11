@@ -110,8 +110,9 @@ Full sequence, optional steps included:
 
 > [!IMPORTANT]
 > **Two approval gates: after the spec, and after the plan.** The agent stops at
-> both, and `/sdd-plan` refuses to run on a spec that is not `approved`. With a
-> Spec Repository, the first gate is upstream: the spec arrives already
+> both, and `/sdd-plan` refuses to run on a spec that is not published —
+> `approved`, or `done` if it was delivered before this repository joined. With
+> a Spec Repository, the first gate is upstream: the spec arrives already
 > approved, or it does not arrive.
 
 **A command is an interactive workflow, not a canned prompt.** Each one:
@@ -214,7 +215,7 @@ templates together, from writing the spec to shipping the code, in
 | --- | --- | --- |
 | 1 | `/sdd-sync <id>` — or `/sdd-specify <feature>` when this repo owns its specs | Mirrors `spec.md` (+ `wireframe.html`) from the Spec Repository and records its provenance in `spec.link.yml`, stops |
 | 2 | Ambiguity in a mirrored spec | Reported here, answered in the Spec Repository, and re-synced |
-| 3 | The spec is `approved` upstream | — |
+| 3 | The spec is published upstream — `approved` | — |
 | 4 | `/sdd-plan <NNN>` | Writes `plan.md`, stops |
 | 5 | Approve the approach | — |
 | 6 | `/sdd-tasks <NNN>` | Writes `tasks.md`, stops |

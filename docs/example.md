@@ -148,7 +148,7 @@ those hashes are checked on every re-sync and by `/sdd-analyze`.
 /sdd-plan 007
 ```
 
-It refuses a spec that is not `approved` upstream, checks the mirror against its
+It refuses a spec that is not published upstream, checks the mirror against its
 hashes, reads the code that will change, asks only what the code cannot answer,
 and writes `docs/specs/007-password-reset/plan.md`:
 

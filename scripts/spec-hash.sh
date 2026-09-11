@@ -12,6 +12,11 @@
 #   scripts/spec-hash.sh --check                         # verify every mirror
 #   scripts/spec-hash.sh --check docs/specs/007-...      # verify one
 #
+# --check answers two different questions, and both have to hold: does this
+# copy still match the bytes that were recorded for it, and does it still say
+# which revision upstream those bytes came from. A hash alone only proves the
+# mirror matches itself.
+#
 # See docs/spec-repo.md.
 
 set -euo pipefail
@@ -115,6 +120,16 @@ recorded_files() {
   ' "$1"
 }
 
+# A value from the `source:` block of a spec.link.yml, by key. Tolerant in the
+# same way as recorded_files: a CR, a quote or a trailing comment is the editor
+# that saved the file, not the provenance it records.
+source_field() {
+  sed -n '/^source:/,/^[^[:space:]#]/p' "$1" \
+    | sed -n "s/^[[:space:]][[:space:]]*$2:[[:space:]]*//p" \
+    | head -n1 \
+    | sed -e 's/[[:space:]]*#.*$//' -e 's/\r$//' -e 's/^"//' -e 's/"$//' -e "s/^'//" -e "s/'\$//" -e 's/[[:space:]]*$//'
+}
+
 emit() {
   local dir=$1 name body="" count=0
   [ -d "$dir" ] || { echo "spec-hash: no such directory: $dir" >&2; exit 2; }
@@ -138,13 +153,14 @@ checked=0
 failed=0
 
 check_one() {
-  local link=$1 dir name want got found=0
+  local link=$1 dir name want got found=0 recorded="" id commit
   dir=$(dirname "$link")
 
   while read -r name want; do
     [ -n "$name" ] || continue
     checked=$((checked + 1))
     found=1
+    recorded+="$name"$'\n'
     local file="$dir/$name"
 
     if [ "$want" = PLACEHOLDER ]; then
@@ -175,6 +191,33 @@ check_one() {
   # A link file recording nothing checks nothing, which would pass in silence.
   if [ "$found" -eq 0 ]; then
     echo "::error file=$link::spec.link.yml has no usable \`files:\` block, so nothing about this mirror is verifiable. Re-run /sdd-sync to rewrite it."
+    failed=1
+  else
+    # Recording a subset passes just as silently: a link file listing only
+    # wireframe.html checks every hash it carries while the spec beside it is
+    # edited freely. What was mirrored is what has to be recorded.
+    while read -r name; do
+      [ -n "$name" ] || continue
+      [ -f "$dir/$name" ] || continue
+      printf '%s' "$recorded" | grep -qx "$name" && continue
+      echo "::error file=$link::$name is mirrored in $dir but carries no sha256 here, so nothing would detect an edit to it. Re-run /sdd-sync."
+      failed=1
+    done < <(mirror_files)
+  fi
+
+  # Provenance, which the hashes cannot stand in for: a mirror edited together
+  # with the digest recorded for it is perfectly self-consistent, and still is
+  # not the spec anybody approved. The commit is what makes that checkable.
+  id=$(source_field "$link" id)
+  commit=$(source_field "$link" commit)
+
+  if [ -z "$id" ] || printf '%s' "$id" | grep -q '<'; then
+    echo "::error file=$link::source.id is missing or still the template's placeholder, so this mirror names no spec upstream. Re-run /sdd-sync."
+    failed=1
+  fi
+
+  if ! printf '%s' "$commit" | grep -qE '^([0-9a-f]{40}|[0-9a-f]{64})$'; then
+    echo "::error file=$link::source.commit is '${commit:-(empty)}' — it must be the full sha the spec was read at, or there is no revision to verify this copy against. Re-run /sdd-sync."
     failed=1
   fi
 }
@@ -215,7 +258,7 @@ check() {
   fi
 
   if [ "$failed" -ne 0 ]; then
-    echo "A mirrored spec no longer matches the hash recorded for it. docs/spec-repo.md says what to do."
+    echo "A mirrored spec does not match what was recorded for it, or no longer says which revision it came from. docs/spec-repo.md says what to do."
     exit 1
   fi
 

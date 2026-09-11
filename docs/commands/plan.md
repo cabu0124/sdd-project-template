@@ -9,9 +9,13 @@ Argument: a spec id.
 
 ## Read first
 
-- The spec. If `status:` is not `approved`, or `## Open questions` is not empty,
-  stop and say so. That gate is the point of the method, not a formality. A spec
-  that is not here yet is not written here: `/sdd-sync <id>` brings it in.
+- The spec. If `status:` is neither `approved` nor `done`, or `## Open questions`
+  is not empty, stop and say so. That gate is the point of the method, not a
+  formality: `draft` and `review` are still being written, and `superseded` was
+  replaced — plan against the successor it names. `done` is published work that
+  was delivered, not a contract that expired, so a repository joining the
+  product later plans against it like any other. A spec that is not here yet is
+  not written here: `/sdd-sync <id>` brings it in.
 - `spec.link.yml`, when the spec has one — it is mirrored from the Spec
   Repository. Check it with `scripts/spec-hash.sh --check docs/specs/<NNN-slug>`:
   a mismatch means the mirror was edited here, and that is a stop, not a detail.
