@@ -14,7 +14,9 @@ spec_repo:
   name: <spec-repo>
 
   # Working copy on this machine, absolute or relative to this repository.
-  # Tried first: it needs no network and shows uncommitted work.
+  # Tried first: it needs no network, and it can read commits that exist there
+  # but have not been pushed yet. Read through git at a resolved commit, never
+  # from the working tree, so an uncommitted edit there never reaches a mirror.
   # Leave empty to always go through `remote`.
   path: <../spec-repo>
 
