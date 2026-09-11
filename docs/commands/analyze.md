@@ -53,17 +53,18 @@ Check in this order, and report findings grouped by severity:
    principles in the constitution. Name the principle when it does.
 7. **Technical** — risks the plan does not mention, work it assumes exists and
    does not, ordering in `tasks.md` that cannot hold.
-8. **Spec drift** — if the spec is mirrored, run
-   `scripts/spec-hash.sh --check docs/specs/<NNN-slug>` — the same script that
-   recorded the hashes, so a failure is the file and never the method. A
-   mismatch means it was edited here: report the diff, and
-   that the correction belongs in the Spec Repository. Then compare the mirror
-   with the source at the configured `ref`: an upstream change that touches a
-   requirement or an acceptance criterion invalidates the plan and the tasks
-   built on it. Neither is fixed here — `/sdd-sync <id>` is.
-9. **Contract drift** — if the plan carries a contract another repo owns, compare
-   it with the current one from that repo and list every difference and what it
-   breaks here. A diverged contract is a decision for the user, not a local edit.
+8. **Spec drift** — if the spec is mirrored, run `scripts/spec-sync.sh <source id>`,
+   the id `spec.link.yml` records. Preview writes nothing and answers both questions
+   at once: exit 1 means the mirror was edited **here**, exit 3 means upstream
+   moved. Report which, with the diff, and what it invalidates — an upstream
+   change that touches a requirement or an acceptance criterion invalidates the
+   plan and the tasks built on it. Neither is fixed here: `/sdd-sync <id>` is,
+   applying the exact commit reported by preview after the user accepts it.
+9. **Contract drift** — if the plan carries a contract another repo owns, read it
+   at the revision the plan pinned and compare that with the owner's current
+   one. List every difference and what it breaks here, and say whether a
+   contract test in this repo would have caught it. A diverged contract is a
+   deliberate upgrade and a decision for the user, not a local edit.
 10. **State** — what is already implemented, so the run resumes rather than
    restarts.
 

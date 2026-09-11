@@ -58,11 +58,14 @@ convention here, and reading it is faster than asking about it.
    criterion scoped here.
 5. Prefer the smallest thing that satisfies the spec. An abstraction the spec
    does not ask for is permanent cost paid for a guess.
-6. If this repo owns a contract other repos consume, define it exactly here:
-   endpoints, payloads, status codes, error shapes, config keys. Consumers copy
-   this block verbatim, so leave nothing implied. A contract this repo only
-   consumes is copied verbatim into the same section, marked given and naming its
-   owner — it is an input, so if it is wrong, stop and ask rather than adjust it.
+6. If this repo owns a contract other repos consume, define it exactly here and
+   publish it as an artifact at a path in this repo: endpoints, payloads, status
+   codes, error shapes, config keys. Leave nothing implied. A contract this repo
+   only consumes is recorded as a **reference** — the owning repo, the path and
+   the revision built against — never as a second copy of the text, because a
+   copy cannot tell anyone the owner has changed it. Pair it with a contract
+   test that fails when this repo no longer matches the revision it pinned. It
+   is an input, so if it is wrong, stop and ask rather than adjust it.
 7. Decide the rollout. A spec that cannot land usable in one merge, or that
    changes behaviour users already rely on, ships behind a flag named after the
    spec and off by default; `## Rollout` records the flag and the condition that

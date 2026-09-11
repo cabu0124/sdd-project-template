@@ -46,16 +46,21 @@ the template.
 ```yaml
 spec_repo:
   name: acme-specs
-  path: ../acme-specs                        # tried first; needs no network
-  remote: git@github.com:acme/acme-specs.git # fallback
+  path: ../acme-specs                        # optional cache of this remote
+  remote: git@github.com:acme/acme-specs.git # authority when configured
   ref: main                                  # branch to track, or tag to pin
   specs_dir: specs
   mirror: [spec.md, wireframe.html]
 ```
 
-**Resolution order:** `path` if it exists on disk, then `remote`, then stop and
-report. Both are read with `git` at `ref`, never from a working tree, so two
-repositories syncing the same id get the same bytes.
+**Authority:** when `remote` is configured, it defines the published ref. `path`
+is used only when its `origin` URL exactly matches `remote`; normal sync fetches
+that remote ref, so an unpublished local commit cannot become a mirror. A
+different origin is ignored. `scripts/spec-sync.sh --offline <id>` is the
+explicit exception: it reads the last remote ref cached at the matching path and
+reports that freshness was not verified. When `remote` is empty, a valid `path`
+is an intentional local-only authority. Every source is read through Git at a
+resolved commit, never from its working tree.
 
 **`ref` is a policy choice.** A branch (`main`) tracks specs as they are
 approved — right for a team that moves together. A tag (`v1.4.0`) pins this
@@ -92,9 +97,19 @@ or reads a hash calls it — `/sdd-sync`, `/sdd-analyze`, and the `spec-mirror`
 job:
 
 ```bash
+scripts/spec-sync.sh --list                          # the spec ids upstream
+scripts/spec-sync.sh <id>                            # preview; write nothing
+scripts/spec-sync.sh --write <sha> <id>              # apply the reviewed revision
 scripts/spec-hash.sh docs/specs/007-password-reset   # the files: block to record
-scripts/spec-hash.sh --check                         # what CI runs
+scripts/sdd-check.sh                                 # what CI runs
 ```
+
+`scripts/spec-sync.sh` is the mechanical half of `/sdd-sync`: preview resolves
+the Spec Repository to one commit, stages the spec and reports what would
+change without writing. Apply takes that full commit SHA, copies those exact
+bytes and records their provenance and hashes. A moving branch therefore cannot
+replace the revision the user reviewed. It never touches `plan.md` or
+`tasks.md`.
 
 That is not ceremony. A hash is only evidence if everyone takes it the same way,
 and the ways to take it differently are all mundane: `Get-FileHash` returns
@@ -135,7 +150,7 @@ either one. Local drift cannot reach `develop`.
 
 ### When `spec-mirror` fails
 
-Run `scripts/spec-hash.sh --check` locally — it is the same code, so it says the
+Run `scripts/sdd-check.sh` locally — it is the same code CI runs, so it says the
 same thing — and read which of the three it reported:
 
 | The job says | What happened | Fix |
@@ -154,5 +169,6 @@ stops it recurring.
 
 Contracts between consumers — endpoints, payloads, config keys — are technology,
 so they never enter the Spec Repository. They are owned by one development repo,
-defined in its `plan.md`, and copied verbatim into the consumers' plans. Full
-rules in `docs/cross-repo.md`, when the product spans repos.
+published as an artifact there, and **referenced** by the consumers at a pinned
+revision rather than copied into each of their plans. Full rules in
+`docs/cross-repo.md`, when the product spans repos.

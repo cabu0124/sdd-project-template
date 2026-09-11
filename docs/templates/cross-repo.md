@@ -40,7 +40,8 @@ plan says which of them this repo answers for:
 
 `/sdd-implement` verifies the criteria in the first list and reports the rest as
 belonging to the repo named. That is what keeps `Done means` satisfiable while
-the spec stays whole.
+the spec stays whole. Who answers for which criterion across the whole product
+is settled once, in the spec's `## Verification` ledger — see `## Done` below.
 
 ## Shared vs local
 
@@ -51,7 +52,7 @@ the spec stays whole.
 | `NNN` number | — | own sequence |
 | `spec.md` — Problem, Scope, Requirements, ACs | identical | — |
 | `wireframe.html` | identical, in the repos that have screens | — |
-| Contract (endpoint, payload, event, config key) | copied verbatim | — |
+| Contract (endpoint, payload, event, config key) | one artifact, in the repo that owns it | the reference, and the revision pinned here |
 | `plan.md`, `tasks.md` | — | yes |
 
 The slug is the join key. Numbers diverge between repos — `007-password-reset`
@@ -64,18 +65,42 @@ them.
 
 ## Contract ownership
 
-One repo **owns** the contract, normally the provider. It designs it in
-`plan.md` → `## Contract and schema changes`, as any other design decision.
+One repo **owns** the contract, normally the provider. It publishes it as an
+artifact in its own repository — an OpenAPI or schema file when the interface
+has one, a short Markdown contract when it does not — and its `plan.md` →
+`## Contract and schema changes` names that path. A contract is endpoints,
+payloads and status codes: technology, so it belongs to HOW and never appears in
+the spec.
 
-Every consumer repo receives it as a **given**, not a decision: copy it verbatim
-into its own `plan.md`, marked as given and naming the owner. A contract is
-endpoints, payloads and status codes — technology — so it belongs to HOW and
-never appears in the spec.
+Every consumer repo receives it as a **given**, not a decision, and records a
+**reference** — the owning repo, the path, and the revision it built against:
+
+```markdown
+- **Given:** `api-svc` · `contracts/auth-reset.yaml` @ `v2.3.0` — POST /auth/reset
+```
+
+**Not a second copy of the text.** Pasting the contract into each consumer's
+plan creates as many editable definitions as there are consumers, and then
+nothing says which one is current: the owner adds a required field, every copy
+still reads as it did, and the mocks written from those copies keep passing
+until production. A reference has one definition, and a revision that visibly
+moves.
+
+Two obligations come with it:
+
+- **Pin a revision and upgrade deliberately.** Two consumers may legitimately
+  sit on different revisions of the same contract; what is not allowed is not
+  knowing which one you are on.
+- **A contract test proves this repo still matches the revision it pinned.**
+  That is what catches the owner's change, at a moment someone can act on it. A
+  mock written from a contract nobody re-checks is a test of your own
+  assumptions.
 
 If a consumer finds the contract wrong, incomplete or contradicted by reality:
 **STOP and ask.** Do not adjust it locally. That is Rule 1.4 applied to the
 seam — a contract silently edited on one side is the failure mode this whole
-document exists to prevent.
+document exists to prevent. A breaking change is the owner's release, with a
+migration both sides agreed, never an edit that appears in one plan.
 
 ## Writing the slice
 
@@ -113,8 +138,16 @@ An unmarked blocked task looks like a task someone forgot to do.
 ## Done
 
 This repo is done when the acceptance criteria its plan scopes here pass. **That
-is not the US being done.** The US is done when every participating repo has
-passed the criteria it took, which is tracked wherever the US lives — not here.
+is not the product being done**, and the difference is not bookkeeping: a
+frontend green against a mock and an API green against its own tests are two
+green repositories with an untested seam between them.
+
+The spec's `## Verification` ledger is where that is settled — one row per
+criterion, the repo that answers for it, and a link to the run that proved it.
+Criteria that only hold with several repositories running together belong to the
+**verifier** named in the spec header, who runs them against named revisions.
+Report yours there when they pass: the spec cannot move to `done` while a row is
+still empty.
 
 ## Worked example
 

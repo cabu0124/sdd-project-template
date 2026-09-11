@@ -13,15 +13,15 @@ spec_repo:
   # Short name used in reports and in spec.link.yml. Free text.
   name: <spec-repo>
 
-  # Working copy on this machine, absolute or relative to this repository.
-  # Tried first: it needs no network, and it can read commits that exist there
-  # but have not been pushed yet. Read through git at a resolved commit, never
-  # from the working tree, so an uncommitted edit there never reaches a mirror.
-  # Leave empty to always go through `remote`.
+  # Optional working copy used as a cache, absolute or relative to this repo.
+  # When remote is set, this path is used only if its origin URL matches remote
+  # exactly; unpublished local commits are never authoritative. With no remote,
+  # path is an explicit local-only authority.
   path: <../spec-repo>
 
-  # Fallback when `path` is missing. Anything `git` can clone or fetch:
-  # an SSH or HTTPS URL, or another local path.
+  # Authoritative source when set. Anything git can fetch: an SSH or HTTPS URL,
+  # or another local path. Normal sync refreshes from it; --offline explicitly
+  # accepts the last remote ref cached by path and reports freshness unverified.
   remote: <git@host:org/spec-repo.git>
 
   # The ref to read. A branch tracks the specs as they are approved; a tag

@@ -38,8 +38,11 @@ depends on how much the user wants landing in one commit.
 5. Cross-repo: a task that cannot finish inside this repo is marked
    `(blocked by <repo> NNN)`, and every mock written against a contract gets its
    own removal task.
-6. A plan with a `## Rollout` flag ends its list with the task that removes it:
-   the flag, its reads and the old path, in one commit. Same rule as the mock —
+6. A plan with a `## Rollout` flag carries the task that removes it — the flag,
+   its reads and the old path, in one commit — last in the list, because it
+   lands after the feature is on for everyone. It is a real task and it is
+   tracked, but it does not gate verification: the criteria are verified with the
+   flag on, and the removal ships in a later release. Same rule as the mock:
    what is added for a transition gets its own removal task, or it never gets
    removed.
 7. Leave `## Notes` empty. `/sdd-implement` fills it as it goes.

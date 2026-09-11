@@ -141,18 +141,22 @@ repository, a ref and a directory:
 # .sdd/config.yml
 spec_repo:
   name: acme-specs
-  path: ../acme-specs                        # tried first; needs no network
-  remote: git@github.com:acme/acme-specs.git # fallback
+  path: ../acme-specs                        # optional cache of this remote
+  remote: git@github.com:acme/acme-specs.git # authority when configured
   ref: main                                  # a branch to track, or a tag to pin
   specs_dir: specs
   mirror: [spec.md, wireframe.html]
 ```
 
-`/sdd-sync <id>` resolves `path`, then `remote`, reads the spec at `ref`, copies
-it into `docs/specs/<NNN-slug>/` **byte for byte**, and writes `spec.link.yml`
-beside it — source id, ref, commit, and a `sha256` per file. That copy is
-reviewable in a pull request, readable offline, and versioned next to the plan
-written against it.
+`/sdd-sync <id>` resolves the authoritative remote ref, optionally through a
+matching local path cache, reads the spec at one commit, copies it into
+`docs/specs/<NNN-slug>/` **byte for byte**, and writes
+`spec.link.yml` beside it — source id, ref, commit, and a `sha256` per file.
+That mechanical half is `scripts/spec-sync.sh`, which the command runs rather
+than reimplements; what the command adds is the judgement the script refuses to
+make — whether a changed requirement invalidates the plan built on it. The copy
+is reviewable in a pull request, readable offline, and versioned next to that
+plan.
 
 **The mirror is read-only.** Its hashes are checked by `/sdd-sync`,
 `/sdd-analyze` and the `spec-mirror` job — all through `scripts/spec-hash.sh`,
@@ -178,7 +182,7 @@ templates together, from writing the spec to shipping the code, in
 
 1. **Copy this template** into the new repo.
 2. **Set up your agent tool.** Point it at [`docs/commands/onboard.md`](docs/commands/onboard.md) and follow
-   it. It asks which tools you use and generates their adapter and `sdd-*`
+  it. It asks which tools you use, runs `scripts/sdd-onboard.sh`, and generates their adapter and `sdd-*`
    command files — all `.gitignore`d. After this, `/sdd-init` and the rest work
    as slash commands. *Each developer does this once.*
 3. **Run `/sdd-init new`** if there is no code yet, or **`/sdd-init existing`**
@@ -186,7 +190,7 @@ templates together, from writing the spec to shipping the code, in
    out, fills `AGENTS.md`, `docs/constitution.md` and `.sdd/config.yml` — where
    your Spec Repository is — and replaces this README with one that describes
    your project.
-4. **Run `/sdd-sync <spec id>`** to bring in the first spec, or
+4. **Run `/sdd-sync <spec id>`** to preview and accept the first spec, or
    `/sdd-specify <what you need>` if this repo owns its specs.
 
 <details>
@@ -213,7 +217,7 @@ templates together, from writing the spec to shipping the code, in
 
 | Step | You | Agent |
 | --- | --- | --- |
-| 1 | `/sdd-sync <id>` — or `/sdd-specify <feature>` when this repo owns its specs | Mirrors `spec.md` (+ `wireframe.html`) from the Spec Repository and records its provenance in `spec.link.yml`, stops |
+| 1 | `/sdd-sync <id>` — or `/sdd-specify <feature>` when this repo owns its specs | Previews the source revision without writing; after acceptance, mirrors `spec.md` (+ `wireframe.html`) at that exact commit and records `spec.link.yml`, stops |
 | 2 | Ambiguity in a mirrored spec | Reported here, answered in the Spec Repository, and re-synced |
 | 3 | The spec is published upstream — `approved` | — |
 | 4 | `/sdd-plan <NNN>` | Writes `plan.md`, stops |
@@ -308,6 +312,15 @@ docs/
       wireframe.html   mirrored, only when the feature has screens
       plan.md          ours
       tasks.md         ours
+scripts/
+  sdd-onboard.sh       deterministic generator for local agent adapters
+  sdd-doctor.sh        offline diagnosis of tools, adapters and spec source
+  spec-sync.sh         previews and applies mirrors at an exact source revision
+  test-spec-sync.sh    exercises remote, cache, offline and local-only sources
+  spec-check.sh        validates local and mirrored spec structure
+  test-spec-check.sh   exercises the validator contract with isolated fixtures
+  spec-hash.sh         records and verifies mirrored bytes and provenance
+  sdd-check.sh         portable local and CI entry point
 ```
 
 That is the whole repo. `onboard` adds, **outside version control**, the adapter

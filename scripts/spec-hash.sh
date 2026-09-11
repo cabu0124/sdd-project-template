@@ -11,6 +11,11 @@
 #   scripts/spec-hash.sh docs/specs/007-password-reset   # the files: block to record
 #   scripts/spec-hash.sh --check                         # verify every mirror
 #   scripts/spec-hash.sh --check docs/specs/007-...      # verify one
+#   scripts/spec-hash.sh --mirror-files                  # the files a sync copies
+#   scripts/spec-hash.sh --source-id <spec.link.yml>     # the id it came from
+#
+# The last two exist so scripts/spec-sync.sh reads the config and the
+# provenance the same way this does, rather than parsing them a second time.
 #
 # --check answers two different questions, and both have to hold: does this
 # copy still match the bytes that were recorded for it, and does it still say
@@ -271,6 +276,8 @@ check() {
 
 case "${1:-}" in
   --check|-c) shift; check "$@" ;;
+  --mirror-files) mirror_files ;;
+  --source-id) shift; source_field "${1:?spec-hash: --source-id needs a spec.link.yml}" id ;;
   --help|-h|"") awk 'NR > 1 && /^#/ { sub(/^#[[:space:]]?/, ""); print; next } NR > 1 { exit }' "$0" ;;
   -*) echo "spec-hash: unknown option: $1" >&2; exit 2 ;;
   *) emit "${1%/}" ;;
