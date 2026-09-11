@@ -314,6 +314,8 @@ docs/
 scripts/
   sdd-onboard.sh       deterministic generator for local agent adapters
   spec-sync.sh         previews and applies mirrors at an exact source revision
+  spec-check.sh        validates local and mirrored spec structure
+  test-spec-check.sh   exercises the validator contract with isolated fixtures
   spec-hash.sh         records and verifies mirrored bytes and provenance
   sdd-check.sh         portable local and CI entry point
 ```
