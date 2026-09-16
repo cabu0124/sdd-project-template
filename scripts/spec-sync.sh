@@ -7,6 +7,11 @@
 #   scripts/spec-sync.sh <id>                    # preview a new sync or re-sync
 #   scripts/spec-sync.sh --write <commit> <id>  # apply exactly what was previewed
 #   scripts/spec-sync.sh --offline <id>          # use the last remote ref cached at path
+#   scripts/spec-sync.sh --resolve               # the commit ref points at, alone
+#   scripts/spec-sync.sh --show <path>           # a file from the source at that commit
+#
+# --resolve and --show exist so scripts/sdd-preflight.sh reads the Spec
+# Repository through this one resolution rather than repeating it.
 #
 # Everything here is the same every time: resolving a ref, reading a blob,
 # writing a pointer. What is left to /sdd-sync is the part that needs judgement
@@ -45,6 +50,7 @@ offline=0
 mode=sync
 id=""
 requested_commit=""
+show_path=""
 
 while [ "$#" -gt 0 ]; do
   case "$1" in
@@ -56,6 +62,13 @@ while [ "$#" -gt 0 ]; do
       ;;
     --offline) offline=1 ;;
     --list|-l) mode=list ;;
+    --resolve) mode=resolve ;;
+    --show)
+      mode=show
+      shift
+      [ "$#" -gt 0 ] || die "--show needs a path inside the Spec Repository" 2
+      show_path=$1
+      ;;
     --help|-h) awk 'NR > 1 && /^#/ { sub(/^#[[:space:]]?/, ""); print; next } NR > 1 { exit }' "$0"; exit 0 ;;
     -*) die "unknown option: $1" 2 ;;
     *) id=$1 ;;
@@ -100,6 +113,12 @@ trap cleanup EXIT
 
 case "$path" in ''|*'<'*) path="" ;; esac
 case "$remote" in ''|*'<'*) remote="" ;; esac
+
+# Neither filled in is the unfilled template, which is exit 2 by this script's
+# contract — not a Spec Repository that failed to resolve.
+if [ -z "$path" ] && [ -z "$remote" ]; then
+  die "neither path nor remote is filled in $CONFIG — /sdd-init fills them" 2
+fi
 
 path_valid=0
 if [ -n "$path" ] && git -C "$path" rev-parse --git-dir >/dev/null 2>&1; then
@@ -168,6 +187,18 @@ available() { git -C "$src" ls-tree --name-only "$commit:$specs_dir" 2>/dev/null
 if [ "$mode" = list ]; then
   echo "$name at $ref ($commit), read from $source_kind:"
   available
+  exit 0
+fi
+
+if [ "$mode" = resolve ]; then
+  echo "$commit"
+  exit 0
+fi
+
+if [ "$mode" = show ]; then
+  git -C "$src" cat-file -e "$commit:$show_path" 2>/dev/null \
+    || die "$show_path is not at $commit in $name" 1
+  git -C "$src" show "$commit:$show_path"
   exit 0
 fi
 

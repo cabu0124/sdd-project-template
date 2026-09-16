@@ -19,6 +19,14 @@ No code without an approved spec. But first, classify the request:
 3. Implement one task at a time, checking it off in `tasks.md`. Spec and code disagree → STOP and ask; never edit the spec to match the code — a spec owned by a Spec Repository has no copy here to edit, and is corrected there, for every repo.
 <!-- sdd:rule1:end -->
 
+Before every `/sdd-sync`, `/sdd-plan`, `/sdd-tasks` and `/sdd-implement`, run
+`scripts/sdd-preflight.sh` and require exit 0 before any task-specific read or
+write. It fetches and inspects this repository, the Spec Repository and every
+consumer it registers, and blocks on anything behind or on a spec that moved
+upstream since it was last reviewed here. It never merges, rebases or switches a
+branch: a blocked result is reported and the command stops. See
+`docs/commands/preflight.md`.
+
 ## Project
 
 <What it is + stack, 2-3 lines.>

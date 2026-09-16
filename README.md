@@ -298,7 +298,7 @@ LICENSE                MIT — replace it in the repository you create
   workflows/           pr-title.yml · release.yml — the delivery model, enforced
                        spec-pointer.yml — the pointers are valid and no spec was copied in
 docs/
-  commands/            the ten workflows, one file per command (incl. onboard)
+  commands/            the eleven workflows, one file per command (incl. onboard)
   constitution.md      durable principles; read when a spec is silent
   delivery.md          branches, feature flags, versioning, releases
   spec-repo.md         how specs are consumed: config, ids, pointers, drift
@@ -320,6 +320,8 @@ scripts/
   sdd-doctor.sh        offline diagnosis of tools, adapters and spec source
   spec-sync.sh         previews and registers a spec at an exact source revision
   test-spec-sync.sh    exercises remote, cache, offline and local-only sources
+  sdd-preflight.sh     the repositories are current before a command reads them
+  test-sdd-preflight.sh  exercises freshness, the consumers registry and gating
   spec-check.sh        validates the structure of the specs this repo owns
   test-spec-check.sh   exercises the validator contract with isolated fixtures
   spec-pointer-check.sh  validates spec pointers and rejects copied spec content

@@ -5,6 +5,13 @@ item can be implemented and verified on its own.
 
 Argument: a spec id.
 
+## Preflight (required)
+
+Before the reads or writes below, run
+`scripts/sdd-preflight.sh --spec <id>` with this command's spec id. Require
+exit 0 for this invocation; on failure report what it said and stop.
+See [preflight.md](preflight.md).
+
 ## Read first
 
 - The spec — requirements and acceptance criteria.

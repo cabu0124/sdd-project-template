@@ -7,6 +7,14 @@ repository answers for.
 Argument: a spec id, and optionally `verify` — `/sdd-implement 007 verify` runs
 the verification pass on demand, without waiting for the list to empty.
 
+## Preflight (required)
+
+Before the reads or writes below, run
+`scripts/sdd-preflight.sh --spec <id>` with this command's spec id. Require
+exit 0 for this invocation; on failure report what it said and stop. Implementing
+against a spec that moved upstream is the one mistake nothing later catches.
+See [preflight.md](preflight.md).
+
 ## Read first
 
 - `tasks.md` — the first unchecked task, and `## Notes` for what earlier runs hit.

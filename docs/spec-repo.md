@@ -159,6 +159,30 @@ and legitimate, and `scripts/spec-check.sh` is what validates it.
 Run `scripts/sdd-check.sh` locally — it is the same code CI runs, so it says the
 same thing.
 
+## Before any command reads: preflight
+
+`scripts/sdd-preflight.sh` runs before `/sdd-sync`, `/sdd-plan`, `/sdd-tasks`
+and `/sdd-implement`. It fetches and inspects — never merges, rebases or
+switches a branch — and blocks when this repository, the Spec Repository or any
+registered consumer is behind, or when the spec being worked on moved upstream
+since it was last reviewed here. Full behaviour in
+[commands/preflight.md](commands/preflight.md).
+
+It learns which repositories to check from the Spec Repository, which publishes
+them in `docs/consumers.md` as one delimited JSON block:
+
+```markdown
+<!-- sdd:consumers:start -->
+{"version": 1, "consumers": [{"name": "acme-web", "builds": "the web app"}]}
+<!-- sdd:consumers:end -->
+```
+
+fenced as `json` between those two comments. Each `name` is the repository's
+directory name, resolved as a sibling of the Spec Repository clone unless
+`--repo Name=/path` says otherwise. The registry is optional: without it
+preflight checks this repository alone and says so, which is the right answer
+for a single-repo product.
+
 ## Sibling development repositories
 
 Contracts between consumers — endpoints, payloads, config keys — are technology,

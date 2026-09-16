@@ -21,6 +21,13 @@ Re-run it any time to pick up an approved change upstream. Running it on a spec
 already registered is a re-sync, and it reports the diff before touching
 anything.
 
+## Preflight (required)
+
+Before the reads or writes below, run `scripts/sdd-preflight.sh` — without
+`--spec`, because a missing or stale pointer is precisely what sync repairs.
+Require exit 0 for this invocation; on failure report what it said and stop.
+See [preflight.md](preflight.md).
+
 ## The script does the mechanics
 
 ```bash
