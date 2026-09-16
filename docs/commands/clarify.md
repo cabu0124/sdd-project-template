@@ -8,11 +8,12 @@ it does not. A clarification round that invents doubts is worse than none.
 Argument: a spec id. If it is missing, take the most recently modified spec whose
 status is `draft`.
 
-**A mirrored spec is not clarified here.** If the spec directory holds a
+**A spec owned upstream is not clarified here.** If the spec directory holds a
 `spec.link.yml`, the spec is owned by the Spec Repository: report the ambiguities
 you found, and stop. They are answered there — with that repository's
-`/sdd-clarify` — and the answer reaches every consumer through `/sdd-sync`.
-Rewriting a requirement in the mirror fixes it for this repo and for nobody else.
+`/sdd-clarify` — and the answer reaches every consumer at its next read. There
+is no copy here to rewrite, and rewriting a requirement anywhere downstream
+would fix it for this repo and for nobody else.
 See `docs/spec-repo.md`.
 
 ## Read first

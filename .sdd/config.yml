@@ -2,8 +2,9 @@
 #
 # Specs are owned by a Spec Repository — the product's source of truth for WHAT
 # and WHY. This repository owns the HOW: plan.md, tasks.md and the code.
-# `/sdd-sync <SPEC-ID>` reads this file, copies the spec in verbatim, and writes
-# its provenance to specs/<NNN-slug>/spec.link.yml.
+# `/sdd-sync <SPEC-ID>` reads this file and writes a pointer to
+# specs/<NNN-slug>/spec.link.yml. The spec itself is never copied here — it is
+# read from the Spec Repository at `ref`.
 #
 # Fill <...>. See docs/spec-repo.md.
 # No Spec Repository? Set `spec_repo: none` and this repo writes its own specs
@@ -30,9 +31,3 @@ spec_repo:
 
   # Directory inside the Spec Repository holding one directory per spec.
   specs_dir: specs
-
-  # Files to copy into specs/<NNN-slug>/ when they exist in the source.
-  # Everything else stays in the Spec Repository.
-  mirror:
-    - spec.md
-    - wireframe.html

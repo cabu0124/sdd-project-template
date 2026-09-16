@@ -9,22 +9,26 @@ Argument: a spec id.
 
 ## Read first
 
-- The spec. If `status:` is neither `approved` nor `done`, or `## Open questions`
+- The spec, read from the Spec Repository at the ref `spec.link.yml` names — it
+  is never copied here. If `status:` is neither `approved` nor `done`, or
+  `## Open questions`
   is not empty, stop and say so. That gate is the point of the method, not a
   formality: `draft` and `review` are still being written, and `superseded` was
   replaced — plan against the successor it names. `done` is published work that
   was delivered, not a contract that expired, so a repository joining the
-  product later plans against it like any other. A spec that is not here yet is
-  not written here: `/sdd-sync <id>` brings it in.
-- `spec.link.yml`, when the spec has one — it is mirrored from the Spec
-  Repository. Check it with `scripts/spec-hash.sh --check specs/<NNN-slug>`:
-  a mismatch means the mirror was edited here, and that is a stop, not a detail.
+  product later plans against it like any other. A spec with no pointer here yet
+  is not written here: `/sdd-sync <id>` registers it.
+- `spec.link.yml`, when the spec has one — which spec this directory implements,
+  and the ref it is read from. Check it with
+  `scripts/spec-pointer-check.sh specs/<NNN-slug>`: a failure means the pointer
+  is wrong or a copy was put back, and that is a stop, not a detail.
   The approval gate is upstream's `status:`; this repo does not grant it.
 - `AGENTS.md` — stack, conventions, boundaries, what is off-limits.
 - `docs/constitution.md` — it outranks convenience when you have to choose.
 - The code that will change: the modules the spec touches, the tests around them,
   the patterns they already follow, the dependencies already available.
-- `docs/spec-repo.md`, when the spec is mirrored — what this repo may decide
+- `docs/spec-repo.md`, when the spec comes from a Spec Repository — what this
+  repo may decide
   about it, and what it may not.
 - `docs/cross-repo.md`, if present and the spec names other repositories — and
   the plans of the sibling repos that already have one, for the contract and for
@@ -72,7 +76,8 @@ convention here, and reading it is faster than asking about it.
    removes it. Most specs need none — say so by deleting the section, because a
    flag on work that lands in one merge costs more than it protects.
 8. If the spec turns out to be wrong, contradictory or impossible, stop and say
-   so. Never edit the spec to match a plan. A mirrored spec is corrected in the
+   so. Never edit the spec to match a plan. A spec owned by a Spec Repository
+   has no copy here to edit, and is corrected in the
    Spec Repository and re-synced — the fix belongs to every repo that consumes
    it, not to this plan.
 

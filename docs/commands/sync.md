@@ -1,18 +1,25 @@
-# /sdd-sync — bring a spec in from the Spec Repository
+# /sdd-sync — register the spec this repository implements
 
-**Goal.** Copy one spec from the product's Spec Repository into
-`specs/<NNN-slug>/`, verbatim, and record where it came from in
-`spec.link.yml`. After this, `/sdd-plan` has something to plan against.
+**Goal.** Write `specs/<NNN-slug>/spec.link.yml`, which says which spec in the
+product's Spec Repository this directory implements and where to read it. After
+this, `/sdd-plan` has something to plan against.
 
-The spec is an **input** to this repository, not an artifact of it. Syncing it
-changes nothing about who owns it: WHAT and WHY stay in the Spec Repository, and
-this repo owns HOW — `plan.md`, `tasks.md`, the code.
+**Nothing is copied.** The spec stays in the Spec Repository and is read from
+there at the configured ref, every time a command needs it. This repository
+holds a pointer, `plan.md`, `tasks.md` and the code — never a second version of
+what was agreed. A copy here would be a file someone can edit, and then the
+product has as many WHATs as it has repositories.
+
+The spec is an **input** to this repository, not an artifact of it. Registering
+it changes nothing about who owns it: WHAT and WHY stay in the Spec Repository,
+and this repo owns HOW — `plan.md`, `tasks.md`, the code.
 
 Argument: a spec id as the Spec Repository names it (`001-password-reset`,
 `SPEC-014`, …), or empty to list what is available and stop.
 
 Re-run it any time to pick up an approved change upstream. Running it on a spec
-already here is a re-sync, and it reports the diff before touching anything.
+already registered is a re-sync, and it reports the diff before touching
+anything.
 
 ## The script does the mechanics
 
@@ -23,11 +30,10 @@ scripts/spec-sync.sh --write <sha> <id> # applies exactly the revision previewed
 scripts/spec-sync.sh --offline <id>    # previews the last remote ref cached at path
 ```
 
-It resolves the Spec Repository to one commit, reads every mirrored file at that
-commit, picks the local number, and writes the mirror with its provenance and
-hashes. Do not reimplement any of it, and never copy a spec through a reply:
-content that passes through you is content that can be reflowed, and a mirror
-that differs by one whitespace fails its hash for every consumer.
+It resolves the Spec Repository to one commit, reads the spec at that commit,
+picks the local number, and writes the pointer. Do not reimplement any of it,
+and never copy a spec through a reply: the spec belongs upstream, and content
+that passes through you is content that can be reflowed.
 
 With both `remote` and `path`, the remote is authoritative and the path is only
 a cache when its `origin` matches exactly. Use `--offline` only after saying
@@ -39,7 +45,7 @@ Its exit code is the whole interface:
 | Exit | Means | What you do |
 | --- | --- | --- |
 | 0 | Already in sync, or an exact revision was applied | Report the commit, the local id and the status upstream |
-| 1 | The mirror here was edited, or that id is not upstream | Stop and report. The fix is upstream, never here |
+| 1 | A spec was copied in beside the pointer, or that id is not upstream | Stop and report. The fix is upstream, never here |
 | 2 | No Spec Repository configured, or the config is unfilled | Stop: `/sdd-specify` or `/sdd-init`, and say which |
 | 3 | A new sync or re-sync is ready for review | The judgement below, then `--write <sha> <id>` |
 
@@ -48,7 +54,7 @@ Its exit code is the whole interface:
 - `.sdd/config.yml` — whether there is a Spec Repository at all. `spec_repo: none`
   means this repository writes its own specs with `/sdd-specify`.
 - `docs/spec-repo.md` — ownership, ids, pinning, and what drift means here.
-- The mirrored spec, in full, before you report anything about it.
+- The source spec, in full, before you report anything about it.
 
 ## Ask only
 
@@ -79,9 +85,9 @@ Its exit code is the whole interface:
    `scripts/spec-sync.sh --write <sha> <id>`, once the user has decided. The SHA
    is the approval boundary: if the source ref advances, the reviewed revision
    is still the one applied.
-5. **Exit 1 — the mirror was edited here.** Do not re-sync over it and do not
-   repair it. Report what differs and stop: the correction belongs in the Spec
-   Repository, where it reaches every repository at once.
+5. **Exit 1 — a spec was copied in here.** Do not re-sync over it and do not
+   reconcile it. Delete the copy and report it: the spec is read from the Spec
+   Repository, and a copy here is a second version of what was agreed.
 6. Never edit the spec to fit this repository. A spec you have to reword to make
    it apply here was written with a repo in mind, and the fix is `/sdd-clarify`
    upstream, for every consumer.
@@ -89,13 +95,13 @@ Its exit code is the whole interface:
 
 ## Writes
 
-Through the script: `specs/<NNN-slug>/spec.md`, its `wireframe.html` when
-the source has one, and `spec.link.yml`. It never edits source specs or their
-working tree. A matching `path` cache may receive fetched Git objects and refs.
+Through the script: `specs/<NNN-slug>/spec.link.yml`, and nothing else. No spec
+content is written anywhere, here or upstream. A matching `path` cache may
+receive fetched Git objects and refs.
 
 ## Stops when
 
-The spec is mirrored and `spec.link.yml` is written, or a pending re-sync has
+The pointer is written, or a pending re-sync has
 been reported and left with the user. Either way, name the source commit, the
 local number, the status upstream, and whether anything already planned here is
 invalidated. Next: `/sdd-plan <NNN>` once the spec is published upstream —

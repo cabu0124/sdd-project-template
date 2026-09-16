@@ -83,6 +83,13 @@ check_one() {
   is_mirror=0
   [ -f "$dir/spec.link.yml" ] && is_mirror=1
 
+  # A pointer names a spec owned elsewhere and keeps no copy of it, so there is
+  # nothing here to validate: the Spec Repository runs these same checks on the
+  # spec itself. scripts/spec-pointer-check.sh validates the pointer.
+  if [ "$is_mirror" -eq 1 ] && [ ! -f "$spec" ]; then
+    return
+  fi
+
   if [ ! -f "$spec" ]; then
     echo "::error::$dir has no spec.md"
     failed=1

@@ -95,7 +95,6 @@ spec_repo:
   remote: git@github.com:acme/acme-specs.git
   ref: main
   specs_dir: specs
-  mirror: [spec.md, wireframe.html]
 ```
 
 `/sdd-init` verifies it before reporting it —
@@ -138,8 +137,8 @@ files:
   wireframe.html: 2a4f80...
 ```
 
-Local `007`, upstream `014`, same slug. The mirror is read-only from here on:
-those hashes are checked on every re-sync and by `/sdd-analyze`.
+Local `007`, upstream `014`, same slug. No copy of the spec is written here:
+`spec.link.yml` says which spec it is, and the spec stays in `acme-specs`.
 
 ---
 
@@ -149,8 +148,9 @@ those hashes are checked on every re-sync and by `/sdd-analyze`.
 /sdd-plan 007
 ```
 
-It refuses a spec that is not published upstream, checks the mirror against its
-hashes, reads the code that will change, asks only what the code cannot answer,
+It refuses a spec that is not published upstream, checks the pointer, reads the
+spec from `acme-specs` and the code that will change, asks only what the code
+cannot answer,
 and writes `specs/007-password-reset/plan.md`:
 
 ```markdown
@@ -247,12 +247,13 @@ rather than reasoned about, with its actual result. AC2 and AC4 are reported as
 /sdd-sync 014-password-reset
 ```
 
-It diffs the mirror against the source before writing anything, reports that a
+It diffs the revision `spec.link.yml` records against the one at `ref` before
+writing anything, reports that a
 requirement changed and that the plan and tasks built on it need a pass through
-`/sdd-plan` and `/sdd-tasks`, and overwrites only once that has been seen.
+`/sdd-plan` and `/sdd-tasks`, and updates the pointer only once that has been seen.
 
-Had someone instead edited the mirror in `acme-web`, the hash in `spec.link.yml`
-would not match, and `/sdd-sync` and `/sdd-analyze` would both stop and say so.
+Had someone instead copied the spec into `acme-web` and edited it, the
+`spec-pointer` job would fail on the copy, and `/sdd-sync` would stop and say so.
 The fix for a wrong spec is always upstream, where it reaches every repository.
 
 ---
@@ -261,7 +262,7 @@ The fix for a wrong spec is always upstream, where it reaches every repository.
 
 | | `acme-specs` | `acme-web` |
 | --- | --- | --- |
-| `spec.md`, `wireframe.html` | owner | read-only mirror |
+| `spec.md`, `wireframe.html` | owner | read from there, never copied |
 | Status, amendments | owner | recorded in `spec.link.yml` |
 | `plan.md`, `tasks.md`, code | never | owner |
 | The contract | never | owned by `acme-api`, referenced at a pinned revision |

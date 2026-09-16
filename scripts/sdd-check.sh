@@ -36,6 +36,6 @@ esac
 run "Specs have valid structure, statuses and traceability" bash scripts/spec-check.sh
 run "Spec validator behavioral fixtures" bash scripts/test-spec-check.sh
 run "Spec source authority fixtures" bash scripts/test-spec-sync.sh
-run "Mirrored specs match their hashes and name their source" bash scripts/spec-hash.sh --check
+run "Spec pointers are well formed and carry no copied spec" bash scripts/spec-pointer-check.sh
 
 exit "$failed"

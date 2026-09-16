@@ -62,7 +62,7 @@ Four files per feature, each answering exactly one question:
 
 | Artifact | Answers | Scope |
 | --- | --- | --- |
-| `spec.md` | **WHAT** the product must do, and why | the product — owned by the Spec Repository, mirrored here read-only |
+| `spec.md` | **WHAT** the product must do, and why | the product — owned by the Spec Repository, read from there and never copied here |
 | `plan.md` | **HOW** *this* repo implements it | this repo |
 | `tasks.md` | the ordered, commit-sized units of work | this repo |
 | `wireframe.html` | **where things sit** on screen | only features with screens |
@@ -80,7 +80,7 @@ flowchart TD
 
   subgraph feature [" per feature "]
     direction TB
-    sync["<b>/sdd-sync id</b><br>spec.md, mirrored<br><i>approved upstream</i>"]
+    sync["<b>/sdd-sync id</b><br>spec.link.yml<br><i>approved upstream</i>"]
     plan["<b>/sdd-plan</b><br>plan.md<br><i>STOP, approval gate</i>"]
     tasks["<b>/sdd-tasks</b><br>tasks.md"]
     impl["<b>/sdd-implement</b><br>code, one task per run"]
@@ -145,7 +145,6 @@ spec_repo:
   remote: git@github.com:acme/acme-specs.git # authority when configured
   ref: main                                  # a branch to track, or a tag to pin
   specs_dir: specs
-  mirror: [spec.md, wireframe.html]
 ```
 
 `/sdd-sync <id>` resolves the authoritative remote ref, optionally through a
@@ -158,9 +157,11 @@ make — whether a changed requirement invalidates the plan built on it. The cop
 is reviewable in a pull request, readable offline, and versioned next to that
 plan.
 
-**The mirror is read-only.** Its hashes are checked by `/sdd-sync`,
-`/sdd-analyze` and the `spec-mirror` job — all through `scripts/spec-hash.sh`,
-so the check never fails on how the digest was taken — and an edit made here
+**The spec is never copied here.** `spec.link.yml` says which spec a directory
+implements; the spec itself is read from the Spec Repository at `ref`. The
+`spec-pointer` job checks the pointer and fails on any copy put back — it needs
+no access to the Spec Repository, because there is no local copy left to compare
+— and an edit made here
 surfaces instead of spreading. A spec that
 is wrong, ambiguous or impossible is fixed in the Spec Repository, where the fix
 reaches every repository that implements it.
@@ -217,8 +218,8 @@ templates together, from writing the spec to shipping the code, in
 
 | Step | You | Agent |
 | --- | --- | --- |
-| 1 | `/sdd-sync <id>` — or `/sdd-specify <feature>` when this repo owns its specs | Previews the source revision without writing; after acceptance, mirrors `spec.md` (+ `wireframe.html`) at that exact commit and records `spec.link.yml`, stops |
-| 2 | Ambiguity in a mirrored spec | Reported here, answered in the Spec Repository, and re-synced |
+| 1 | `/sdd-sync <id>` — or `/sdd-specify <feature>` when this repo owns its specs | Previews the source revision without writing; after acceptance, records `spec.link.yml` at that exact commit, copying no spec content, stops |
+| 2 | Ambiguity in a spec owned upstream | Reported here, answered in the Spec Repository, and read again from there |
 | 3 | The spec is published upstream — `approved` | — |
 | 4 | `/sdd-plan <NNN>` | Writes `plan.md`, stops |
 | 5 | Approve the approach | — |
@@ -295,12 +296,12 @@ LICENSE                MIT — replace it in the repository you create
   config.yml           where the Spec Repository is — the only coupling
 .github/
   workflows/           pr-title.yml · release.yml — the delivery model, enforced
-                       spec-mirror.yml — the mirrors still match their hashes
+                       spec-pointer.yml — the pointers are valid and no spec was copied in
 docs/
   commands/            the ten workflows, one file per command (incl. onboard)
   constitution.md      durable principles; read when a spec is silent
   delivery.md          branches, feature flags, versioning, releases
-  spec-repo.md         how specs are consumed: config, ids, mirror, drift
+  spec-repo.md         how specs are consumed: config, ids, pointers, drift
   agents/              roles for a subagent or chat mode — ships empty
   skills/              model-invoked how-to guides, one SKILL.md per dir — ships empty
   standards/           always-on rules scoped to a file glob — ships empty
@@ -311,19 +312,17 @@ docs/
                        agent.md · skill.md · standard.md — blank templates for the above
 specs/
   NNN-slug/  one directory per feature
-    spec.md          mirrored, read-only
-    spec.link.yml    source id, ref, commit, checksums
-    wireframe.html   mirrored, only when the feature has screens
+    spec.link.yml    which spec upstream, its ref and the revision last reviewed
     plan.md          ours
     tasks.md         ours
 scripts/
   sdd-onboard.sh       deterministic generator for local agent adapters
   sdd-doctor.sh        offline diagnosis of tools, adapters and spec source
-  spec-sync.sh         previews and applies mirrors at an exact source revision
+  spec-sync.sh         previews and registers a spec at an exact source revision
   test-spec-sync.sh    exercises remote, cache, offline and local-only sources
-  spec-check.sh        validates local and mirrored spec structure
+  spec-check.sh        validates the structure of the specs this repo owns
   test-spec-check.sh   exercises the validator contract with isolated fixtures
-  spec-hash.sh         records and verifies mirrored bytes and provenance
+  spec-pointer-check.sh  validates spec pointers and rejects copied spec content
   sdd-check.sh         portable local and CI entry point
 ```
 
