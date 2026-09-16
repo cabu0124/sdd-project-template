@@ -17,7 +17,7 @@ Everything this gate compares:
   has one.
 - `AGENTS.md` and `docs/constitution.md`.
 - The current state of the code the plan touches.
-- `spec.link.yml`, if the spec is mirrored, and `docs/spec-repo.md`.
+- `spec.link.yml`, if the spec comes from a Spec Repository, and `docs/spec-repo.md`.
 - `docs/cross-repo.md` (if present) and the current contract from the owning
   repo, if the plan carries a contract this repo does not own.
 
@@ -47,15 +47,17 @@ Check in this order, and report findings grouped by severity:
 5. **Wireframe** — if the spec has one: every screen it draws is a screen the
    spec puts in scope, every element on it traces back to a requirement, and
    nothing it shows contradicts the spec. A drifted wireframe is corrected
-   through `/sdd-clarify`, or upstream when it is mirrored — never the spec, to
+   through `/sdd-clarify`, or upstream when the spec is owned there — never the
+   spec, to
    match the picture.
 6. **Project fit** — nothing conflicts with the boundaries in `AGENTS.md` or the
    principles in the constitution. Name the principle when it does.
 7. **Technical** — risks the plan does not mention, work it assumes exists and
    does not, ordering in `tasks.md` that cannot hold.
-8. **Spec drift** — if the spec is mirrored, run `scripts/spec-sync.sh <source id>`,
+8. **Spec drift** — if the spec comes from a Spec Repository, run
+   `scripts/spec-sync.sh <source id>`,
    the id `spec.link.yml` records. Preview writes nothing and answers both questions
-   at once: exit 1 means the mirror was edited **here**, exit 3 means upstream
+   at once: exit 1 means a spec was copied in **here**, exit 3 means upstream
    moved. Report which, with the diff, and what it invalidates — an upstream
    change that touches a requirement or an acceptance criterion invalidates the
    plan and the tasks built on it. Neither is fixed here: `/sdd-sync <id>` is,

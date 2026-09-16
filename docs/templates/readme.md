@@ -60,7 +60,7 @@ whole subsection if there are none.>
 
 ```text
 <the two or three directories a newcomer needs, one line each>
-specs/      one directory per feature — spec.md (mirrored) · plan.md · tasks.md
+specs/      one directory per feature — spec.link.yml · plan.md · tasks.md
 ```
 
 ## Spec first
@@ -68,12 +68,13 @@ specs/      one directory per feature — spec.md (mirrored) · plan.md · tasks
 > [!IMPORTANT]
 > **No code without an approved spec.** Specs live in <the Spec Repository —
 > name and link it; delete this clause if this repo owns its specs>, and each one
-> is mirrored into `specs/NNN-slug/` before any work starts. The agent stops
+> is read from there, never copied here: `specs/NNN-slug/spec.link.yml` says
+> which spec, before any work starts. The agent stops
 > for approval **after the plan**.
 
 ```mermaid
 flowchart LR
-  sync["<b>/sdd-sync</b><br>WHAT<br><i>mirrored from the Spec Repository</i>"]
+  sync["<b>/sdd-sync</b><br>WHAT<br><i>read from the Spec Repository</i>"]
   plan["<b>/sdd-plan</b><br>HOW"]
   tasks["<b>/sdd-tasks</b><br>work"]
   impl["<b>/sdd-implement</b><br>one task per run"]
@@ -91,9 +92,9 @@ first rather than assuming.
 | `docs/constitution.md` | The durable principles |
 | `docs/delivery.md` | Branches, feature flags, releases |
 | `docs/commands/` | The workflow behind each command |
-| `docs/spec-repo.md` | Where the specs come from, and why the mirror is read-only |
+| `docs/spec-repo.md` | Where the specs come from, and why no copy is kept here |
 | `.sdd/config.yml` | The Spec Repository: path, remote, ref |
-| `specs/NNN-slug/` | One feature: `spec.md` (mirrored) · `plan.md` · `tasks.md` |
+| `specs/NNN-slug/` | One feature: `spec.link.yml` · `plan.md` · `tasks.md` |
 
 > [!TIP]
 > **New here?** Set up your agent tool once with `docs/commands/onboard.md` — the

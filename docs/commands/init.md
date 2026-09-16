@@ -128,11 +128,12 @@ has no tests.
     `docs/templates/wireframe.html` as well — nothing will read it. Single-repo
     product: delete `docs/templates/cross-repo.md`, it was not needed. A repo
     whose specs come from a Spec Repository never writes one, so delete
-    `docs/templates/spec.md` as well — the mirror is the only spec here.
+    `docs/templates/spec.md` as well — the spec is read from upstream and no
+    spec is written here.
     `docs/delivery.md` is not a template — it stays, adapted in step 9. A repo
     whose specs are local keeps `docs/templates/spec.md`; a repo whose specs
-    come from a Spec Repository may delete it because mirrors are the only specs
-    written here. Replace
+    come from a Spec Repository may delete it because it writes no spec of its
+    own. Replace
     `LICENSE` with the licence of what you build — the template's is not a
     default to keep.
     Delete `CHANGELOG.md` if it carries the template's own releases: a repository

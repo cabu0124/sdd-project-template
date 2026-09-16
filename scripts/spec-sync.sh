@@ -1,19 +1,29 @@
 #!/usr/bin/env bash
 #
-# The mechanical half of /sdd-sync: resolve the Spec Repository to one commit,
-# copy the spec out of git byte for byte, and record where it came from.
+# The mechanical half of /sdd-sync: resolve the Spec Repository to one commit
+# and record which spec this repository implements. It never copies the spec.
 #
 #   scripts/spec-sync.sh --list                  # the spec ids available upstream
 #   scripts/spec-sync.sh <id>                    # preview a new sync or re-sync
 #   scripts/spec-sync.sh --write <commit> <id>  # apply exactly what was previewed
 #   scripts/spec-sync.sh --offline <id>          # use the last remote ref cached at path
+#   scripts/spec-sync.sh --resolve               # the commit ref points at, alone
+#   scripts/spec-sync.sh --show <path>           # a file from the source at that commit
+#
+# --resolve and --show exist so scripts/sdd-preflight.sh reads the Spec
+# Repository through this one resolution rather than repeating it.
 #
 # Everything here is the same every time: resolving a ref, reading a blob,
-# writing a hash. What is left to /sdd-sync is the part that needs judgement —
-# reading the spec, and saying whether a changed requirement invalidates the
+# writing a pointer. What is left to /sdd-sync is the part that needs judgement
+# — reading the spec, and saying whether a changed requirement invalidates the
 # plan and the tasks built on it.
 #
-# It never writes plan.md, tasks.md, code, or source spec content. A matching
+# The spec stays in the Spec Repository and is read from there at `ref`. What is
+# written here is specs/<NNN-slug>/spec.link.yml, whose `source.commit` records
+# the revision last reviewed — which is what makes "a requirement moved since
+# you planned" a reviewable diff rather than a silent change.
+#
+# It never writes plan.md, tasks.md, code, or any spec content. A matching
 # path cache may receive fetched Git objects and refs. See docs/spec-repo.md.
 
 set -euo pipefail
@@ -22,7 +32,7 @@ if root=$(git rev-parse --show-toplevel 2>/dev/null); then
   cd "$root"
 fi
 
-SPEC_HASH=scripts/spec-hash.sh
+SPEC_POINTER=scripts/spec-pointer-check.sh
 CONFIG=.sdd/config.yml
 
 die() { echo "spec-sync: $1" >&2; exit "${2:-1}"; }
@@ -40,6 +50,7 @@ offline=0
 mode=sync
 id=""
 requested_commit=""
+show_path=""
 
 while [ "$#" -gt 0 ]; do
   case "$1" in
@@ -51,6 +62,13 @@ while [ "$#" -gt 0 ]; do
       ;;
     --offline) offline=1 ;;
     --list|-l) mode=list ;;
+    --resolve) mode=resolve ;;
+    --show)
+      mode=show
+      shift
+      [ "$#" -gt 0 ] || die "--show needs a path inside the Spec Repository" 2
+      show_path=$1
+      ;;
     --help|-h) awk 'NR > 1 && /^#/ { sub(/^#[[:space:]]?/, ""); print; next } NR > 1 { exit }' "$0"; exit 0 ;;
     -*) die "unknown option: $1" 2 ;;
     *) id=$1 ;;
@@ -82,7 +100,6 @@ done
 # when its origin URL matches exactly. With no remote, path is a local authority.
 src=""
 tmp=""
-stage=""
 kind=""
 source_kind=""
 
@@ -90,13 +107,18 @@ source_kind=""
 # script's own exit status, so a correct run would report as a failure.
 cleanup() {
   [ -n "$tmp" ] && rm -rf "$tmp"
-  [ -n "$stage" ] && rm -rf "$stage"
   return 0
 }
 trap cleanup EXIT
 
 case "$path" in ''|*'<'*) path="" ;; esac
 case "$remote" in ''|*'<'*) remote="" ;; esac
+
+# Neither filled in is the unfilled template, which is exit 2 by this script's
+# contract — not a Spec Repository that failed to resolve.
+if [ -z "$path" ] && [ -z "$remote" ]; then
+  die "neither path nor remote is filled in $CONFIG — /sdd-init fills them" 2
+fi
 
 path_valid=0
 if [ -n "$path" ] && git -C "$path" rev-parse --git-dir >/dev/null 2>&1; then
@@ -168,6 +190,18 @@ if [ "$mode" = list ]; then
   exit 0
 fi
 
+if [ "$mode" = resolve ]; then
+  echo "$commit"
+  exit 0
+fi
+
+if [ "$mode" = show ]; then
+  git -C "$src" cat-file -e "$commit:$show_path" 2>/dev/null \
+    || die "$show_path is not at $commit in $name" 1
+  git -C "$src" show "$commit:$show_path"
+  exit 0
+fi
+
 [ -n "$id" ] || die "which spec? Pass an id, or --list to see them" 2
 
 git -C "$src" cat-file -e "$commit:$specs_dir/$id/spec.md" 2>/dev/null || {
@@ -181,7 +215,7 @@ git -C "$src" cat-file -e "$commit:$specs_dir/$id/spec.md" 2>/dev/null || {
 dir=""
 shopt -s nullglob
 for link in specs/*/spec.link.yml; do
-  [ "$(bash "$SPEC_HASH" --source-id "$link" 2>/dev/null)" = "$id" ] || continue
+  [ "$(bash "$SPEC_POINTER" --source-id "$link" 2>/dev/null)" = "$id" ] || continue
   dir=$(dirname "$link")
   break
 done
@@ -201,74 +235,74 @@ else
   fresh=0
 fi
 
-# Stage first. A sync that writes as it goes and fails halfway leaves a mirror
-# that matches neither the source nor its own hashes.
-stage=$(mktemp -d)
+# The provenance recorded here, if this spec is already registered.
+recorded_field() {
+  sed -n '/^source:/,/^[^[:space:]#]/p' "$dir/spec.link.yml" \
+    | sed -n "s/^[[:space:]][[:space:]]*$1:[[:space:]]*//p" | head -n1 \
+    | sed -e 's/[[:space:]]*#.*$//' -e 's/\r$//' -e 's/[[:space:]]*$//'
+}
 
-copied=""
-while read -r file; do
-  [ -n "$file" ] || continue
-  git -C "$src" cat-file -e "$commit:$specs_dir/$id/$file" 2>/dev/null || continue
-  git -C "$src" show "$commit:$specs_dir/$id/$file" > "$stage/$file"
-  copied+="$file"$'\n'
-done < <(bash "$SPEC_HASH" --mirror-files)
-
-[ -n "$copied" ] || die "nothing under mirror: was found in $specs_dir/$id at $commit"
+# Every file the spec has upstream at one commit.
+files_at() { git -C "$src" ls-tree --name-only "$1:$specs_dir/$id" 2>/dev/null; }
 
 echo "spec:   $id at $commit"
 echo "source: $source_kind"
 echo "local:  $dir"
 
+changed=0
+recorded_commit=""
+
 if [ "$fresh" -eq 0 ]; then
-  # An edited mirror is not a re-sync question: it is a repository that gave
-  # itself its own version of what everyone agreed.
-  bash "$SPEC_HASH" --check "$dir" >/dev/null || {
-    echo "spec-sync: $dir does not match its recorded hashes, so it was edited here. Nothing written." >&2
-    bash "$SPEC_HASH" --check "$dir" >&2 || true
+  # A spec copied in beside the pointer is not a re-sync question: it is a
+  # repository that gave itself its own version of what everyone agreed.
+  bash "$SPEC_POINTER" "$dir" >/dev/null || {
+    echo "spec-sync: $dir does not hold a valid pointer. Nothing written." >&2
+    bash "$SPEC_POINTER" "$dir" >&2 || true
     exit 1
   }
 
-  changed=0
-  while read -r file; do
-    [ -n "$file" ] || continue
-    if [ -f "$dir/$file" ]; then
-      diff -u "$dir/$file" "$stage/$file" && continue
-    else
-      echo "new upstream: $file"
-    fi
-    changed=1
-  done <<<"$copied"
+  recorded_commit=$(recorded_field commit)
 
-  while read -r file; do
-    [ -n "$file" ] || continue
-    [ -f "$dir/$file" ] || continue
-    printf '%s' "$copied" | grep -qx "$file" && continue
-    echo "gone upstream: $file (it would be removed here)"
-    changed=1
-  done < <(bash "$SPEC_HASH" --mirror-files)
-
-  recorded_commit=$(sed -n '/^source:/,/^[^[:space:]#]/p' "$dir/spec.link.yml" \
-    | sed -n 's/^[[:space:]][[:space:]]*commit:[[:space:]]*//p' | head -n1)
-
-  if [ "$changed" -eq 0 ] && [ "$recorded_commit" = "$commit" ]; then
+  if [ "$recorded_commit" = "$commit" ]; then
     echo "Already in sync."
     exit 0
   fi
 
+  # Both revisions are read from git: nothing was copied here, so there is no
+  # local file to compare and no way for this repository to have edited either.
+  if ! git -C "$src" cat-file -e "$recorded_commit^{commit}" 2>/dev/null; then
+    echo
+    echo "The revision last reviewed here ($recorded_commit) is not available from"
+    echo "$source_kind, so the change cannot be shown. Read the spec upstream before applying."
+    changed=1
+  else
+    while read -r file; do
+      [ -n "$file" ] || continue
+      if ! git -C "$src" cat-file -e "$recorded_commit:$specs_dir/$id/$file" 2>/dev/null; then
+        echo "new upstream: $file"
+        changed=1
+        continue
+      fi
+      if ! git -C "$src" cat-file -e "$commit:$specs_dir/$id/$file" 2>/dev/null; then
+        echo "gone upstream: $file"
+        changed=1
+        continue
+      fi
+      diff -u \
+        <(git -C "$src" show "$recorded_commit:$specs_dir/$id/$file") \
+        <(git -C "$src" show "$commit:$specs_dir/$id/$file") \
+        --label "a/$file ($recorded_commit)" --label "b/$file ($commit)" && continue
+      changed=1
+    done < <({ files_at "$recorded_commit"; files_at "$commit"; } | sort -u)
+  fi
 fi
 
 if [ "$write" -eq 0 ]; then
   echo
   if [ "$fresh" -eq 1 ]; then
-    while read -r file; do
-      [ -n "$file" ] || continue
-      echo "new upstream: $file"
-      diff -u /dev/null "$stage/$file" || true
-    done <<<"$copied"
-    echo
-    echo "Nothing written. Review the source spec first, then apply this exact revision:"
+    echo "Nothing written. Read the source spec first, then register this exact revision:"
   elif [ "$changed" -eq 0 ]; then
-    echo "Only the source revision changed; mirrored files are byte-identical."
+    echo "Only the source revision changed; the spec itself is byte-identical."
     echo "No re-planning is required. Apply the provenance update with:"
   else
     echo "Nothing written. A changed requirement or acceptance criterion invalidates"
@@ -278,26 +312,17 @@ if [ "$write" -eq 0 ]; then
   exit 3
 fi
 
-mkdir -p "$dir"
-while read -r file; do
-  [ -n "$file" ] || continue
-  cp "$stage/$file" "$dir/$file"
-done <<<"$copied"
-
-# A mirrored file that disappeared upstream has to go, or it stays here
-# unrecorded and unprotected.
-while read -r file; do
-  [ -n "$file" ] || continue
-  [ -f "$dir/$file" ] || continue
-  printf '%s' "$copied" | grep -qx "$file" && continue
-  rm "$dir/$file"
-done < <(bash "$SPEC_HASH" --mirror-files)
-
-status=$(sed -n 's/^- \*\*Status:\*\*[[:space:]]*//p' "$dir/spec.md" | head -n1 \
+status=$(git -C "$src" show "$commit:$specs_dir/$id/spec.md" \
+  | sed -n 's/^- \*\*Status:\*\*[[:space:]]*//p' | head -n1 \
   | sed -e 's/<!--.*-->//' -e 's/[[:space:]]*$//')
 
+mkdir -p "$dir"
 {
-  printf '# Provenance of the mirrored spec. Written by scripts/spec-sync.sh — do not edit by hand.\n\n'
+  printf '# Which spec this directory implements. Written by scripts/spec-sync.sh — do not edit by hand.\n'
+  printf '#\n'
+  printf '# The spec is not copied here: it is read from the Spec Repository at ref.\n'
+  printf '# source.commit is the revision last reviewed, which is what /sdd-sync diffs\n'
+  printf '# against to report that a requirement moved since the plan was written.\n\n'
   printf 'spec_repo: %s\n\n' "${name:-unknown}"
   printf 'source:\n'
   printf '  id: %s\n' "$id"
@@ -307,11 +332,10 @@ status=$(sed -n 's/^- \*\*Status:\*\*[[:space:]]*//p' "$dir/spec.md" | head -n1 
   printf '  status: %s\n\n' "${status:-unknown}"
   printf 'synced:\n'
   printf '  at: %s\n' "$(date +%Y-%m-%d)"
-  printf '  local_id: %s\n\n' "$(basename "$dir")"
-  bash "$SPEC_HASH" "$dir"
+  printf '  local_id: %s\n' "$(basename "$dir")"
 } > "$dir/spec.link.yml"
 
-bash "$SPEC_HASH" --check "$dir"
+bash "$SPEC_POINTER" "$dir"
 
 echo "status upstream: ${status:-unknown}"
 echo "plan.md and tasks.md were not touched. /sdd-plan $(basename "$dir") is next."

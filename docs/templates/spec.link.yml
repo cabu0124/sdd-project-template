@@ -1,11 +1,13 @@
-# Provenance of the mirrored spec. Written by scripts/spec-sync.sh — do not edit
-# by hand. This file documents the shape; the script fills it.
-# The spec beside this file is a verbatim copy: it is owned by the Spec
-# Repository, and changing it here is what this file exists to detect.
+# Which spec this directory implements. Written by scripts/spec-sync.sh — do not
+# edit by hand. This file documents the shape; the script fills it.
 #
-# The hashes below come from `scripts/spec-hash.sh <this directory>`, which
-# prints the whole `files:` block. Compute them any other way and they will
-# disagree with the way they are read back, on somebody else's machine.
+# There is no copy of the spec here, and that is the point: it is read from the
+# Spec Repository at `ref`, so this repository cannot hold a second version of
+# what was agreed. This file only says which spec, and where to find it.
+#
+# `source.commit` is the revision last reviewed here. It is not what gets read —
+# reads follow `ref` — it is what /sdd-sync diffs against to tell you that a
+# requirement moved since plan.md and tasks.md were written.
 
 spec_repo: <spec-repo>            # `spec_repo.name` from .sdd/config.yml
 
@@ -13,13 +15,9 @@ source:
   id: <NNN-slug>                  # as the Spec Repository numbers it
   path: <specs_dir>/<NNN-slug>
   ref: <branch or tag>
-  commit: <full sha of that ref at sync time>
+  commit: <full sha of that ref when it was last reviewed here>
   status: <draft | review | approved | done | superseded>   # upstream, at sync time
 
 synced:
   at: <YYYY-MM-DD>
   local_id: <NNN-slug>            # this repository's own number for it
-
-files:                            # sha256 of each mirrored file, as copied
-  spec.md: <sha256>
-  wireframe.html: <sha256>        # delete the line when there is none

@@ -12,8 +12,9 @@ consume the same spec.
 
 | Artifact | Lives in | Answers |
 | --- | --- | --- |
-| `spec.md` | the **Spec Repository** — mirrored here, read-only | WHAT the product must do, and why |
-| `wireframe.html` | the **Spec Repository** — mirrored here, read-only | where things sit on screen |
+| `spec.md` | the **Spec Repository** — read from there, never copied here | WHAT the product must do, and why |
+| `wireframe.html` | the **Spec Repository** — read from there, never copied here | where things sit on screen |
+| `spec.link.yml` | **here** | which spec this directory implements |
 | `plan.md` | **here** | HOW *this* repo implements it |
 | `tasks.md` | **here** | the ordered units of work, *here* |
 | the code | **here** | — |
@@ -28,13 +29,10 @@ the Spec Repository decide how every consumer builds.
 ```text
 Spec Repository            this repository
   specs/001-password-reset
-        │  /sdd-sync
-        └──────────────▶ specs/007-password-reset/
-                           spec.md          mirror, byte-identical
-                           spec.link.yml    where it came from
-                           wireframe.html   mirror, when the spec has one
-                           plan.md          /sdd-plan   ← ours
-                           tasks.md         /sdd-tasks  ← ours
+        │                    specs/007-password-reset/
+        │  /sdd-sync          spec.link.yml    which spec, and where
+        └──── read at ref ───▶   plan.md          /sdd-plan   ← ours
+           never copied      tasks.md         /sdd-tasks  ← ours
 ```
 
 ## Configuration
@@ -50,12 +48,11 @@ spec_repo:
   remote: git@github.com:acme/acme-specs.git # authority when configured
   ref: main                                  # branch to track, or tag to pin
   specs_dir: specs
-  mirror: [spec.md, wireframe.html]
 ```
 
 **Authority:** when `remote` is configured, it defines the published ref. `path`
 is used only when its `origin` URL exactly matches `remote`; normal sync fetches
-that remote ref, so an unpublished local commit cannot become a mirror. A
+that remote ref, so an unpublished local commit cannot be registered. A
 different origin is ignored. `scripts/spec-sync.sh --offline <id>` is the
 explicit exception: it reads the last remote ref cached at the matching path and
 reports that freshness was not verified. When `remote` is empty, a valid `path`
@@ -85,85 +82,106 @@ Two numbers, one join key — the rule `docs/cross-repo.md` (if present) already
 makes the story greppable across repositories; `spec.link.yml` holds the exact
 mapping, so nothing depends on the numbers matching.
 
-## The mirror is read-only
+## There is no copy, and that is the design
 
-The copy under `specs/` exists so the spec is reviewable in a pull request,
-readable offline, and versioned with the plan that was written against it. It is
-still not yours: `spec.link.yml` carries a `sha256` per mirrored file, and
-`/sdd-sync` and `/sdd-analyze` compare against it.
+An earlier arrangement mirrored `spec.md` under `specs/` so it was reviewable in
+a pull request and readable offline. It also made the spec a file in this
+repository — and a file in this repository can be edited. Once it is, this repo
+has its own version of what was agreed, the hash recorded beside it agrees with
+it, and everything looks right locally while every other consumer builds
+something else.
 
-One script takes that digest, `scripts/spec-hash.sh`, and everything that writes
-or reads a hash calls it — `/sdd-sync`, `/sdd-analyze`, and the `spec-mirror`
-job:
+So the copy is gone. `specs/<NNN-slug>/spec.link.yml` records which spec this
+directory implements and where to read it; the spec itself stays in the Spec
+Repository and is read from there at `ref`.
 
 ```bash
-scripts/spec-sync.sh --list                          # the spec ids upstream
-scripts/spec-sync.sh <id>                            # preview; write nothing
-scripts/spec-sync.sh --write <sha> <id>              # apply the reviewed revision
-scripts/spec-hash.sh specs/007-password-reset   # the files: block to record
-scripts/sdd-check.sh                                 # what CI runs
+scripts/spec-sync.sh --list                     # the spec ids upstream
+scripts/spec-sync.sh <id>                       # preview; write nothing
+scripts/spec-sync.sh --write <sha> <id>         # register the reviewed revision
+scripts/spec-pointer-check.sh                   # every pointer, no credentials
+scripts/sdd-check.sh                            # what CI runs
 ```
 
 `scripts/spec-sync.sh` is the mechanical half of `/sdd-sync`: preview resolves
-the Spec Repository to one commit, stages the spec and reports what would
-change without writing. Apply takes that full commit SHA, copies those exact
-bytes and records their provenance and hashes. A moving branch therefore cannot
-replace the revision the user reviewed. It never touches `plan.md` or
-`tasks.md`.
+the Spec Repository to one commit and reports what changed since the revision
+this repository last reviewed, without writing. Apply takes that full commit
+SHA and records it. A moving branch therefore cannot replace the revision the
+user reviewed. It never touches `plan.md` or `tasks.md`, and it never writes
+spec content anywhere.
 
-That is not ceremony. A hash is only evidence if everyone takes it the same way,
-and the ways to take it differently are all mundane: `Get-FileHash` returns
-uppercase hex, a mirror saved through an editor on Windows is CRLF where the
-sync recorded LF, a hand-copied digest is a typo. Each of those fails a spec
-nobody edited, in somebody else's pull request — which is why `.gitattributes`
-pins the mirrored files to LF and why no command computes a digest of its own.
+**`source.commit` is not what gets read.** Reads follow `ref`, so an approved
+change upstream reaches this repository with no action — there is no copy to
+refresh. The commit records the revision last reviewed *here*, which is what
+makes "a requirement moved since the plan was written" a diff somebody reviews
+rather than a change nobody notices.
 
 | Situation | What to do |
 | --- | --- |
-| The spec is ambiguous or wrong | Raise it in the Spec Repository — `/sdd-clarify` there. Never patch the mirror |
+| The spec is ambiguous or wrong | Raise it in the Spec Repository — `/sdd-clarify` there |
 | The spec asks for something impossible here | Stop and say so, as Rule 1 requires. The answer is a spec change upstream, not a local edit |
 | The spec is right but this repo only builds part of it | Nothing to change. That split is `plan.md` → `## Scope in this repo` |
-| Upstream changed | `/sdd-sync <id>` again; it reports what the change invalidates |
-
-A mirror edited here fails its own hash and every consumer keeps the old wording,
-so the product quietly has as many WHATs as it has repositories. That is the one
-rule this file exists to state.
+| Upstream changed | `/sdd-sync <id>` again; it diffs the two revisions and reports what the change invalidates |
+| A `spec.md` appeared beside a pointer | Delete it. It is a second WHAT, and the `spec-pointer` job fails on it |
 
 ## Drift
 
-`/sdd-sync` re-run on a spec already present reports two diffs before it writes
-anything:
+There is no local copy, so a spec cannot drift from its source here. What can
+drift is the plan and the tasks written against an older wording, and that is
+what `/sdd-sync` reports:
 
-- **Local drift** — the mirror no longer matches its recorded hash. Someone
-  edited it here. Report and stop.
-- **Upstream drift** — the source at `ref` no longer matches the mirror. Report
-  what changed and what it invalidates: a changed requirement or acceptance
-  criterion sends `plan.md` back through `/sdd-plan` and `tasks.md` through
-  `/sdd-tasks`, and a spec that moved to `superseded` upstream stops work here
-  until the user decides.
+- **Upstream drift** — the spec at `ref` is no longer the revision recorded in
+  `spec.link.yml`. The preview diffs the two revisions out of git and exits 3.
+  A changed requirement or acceptance criterion sends `plan.md` back through
+  `/sdd-plan` and `tasks.md` through `/sdd-tasks`; a spec that moved to
+  `superseded` upstream stops work here until the user decides.
+- **A copy put back** — someone added `spec.md` beside the pointer. That is not
+  drift to reconcile, it is a file to delete.
 
-`/sdd-analyze` checks the same hashes, so a stale mirror surfaces at the quality
-gate even if nobody re-synced. And the `spec-mirror` job in
-`.github/workflows/spec-mirror.yml` recomputes them on every pull request, which
-is the backstop for the case neither command covers: nobody thought to run
-either one. Local drift cannot reach `develop`.
+### What the `spec-pointer` job proves
 
-### When `spec-mirror` fails
+`.github/workflows/spec-pointer.yml` runs `scripts/sdd-check.sh` on every pull
+request, and `scripts/spec-pointer-check.sh` within it answers two questions:
+
+| Question | Catches |
+| --- | --- |
+| Is every `spec.link.yml` well formed — a real source id, a full commit, `synced.local_id` equal to its directory, and the ref the config reads? | a pointer to the wrong spec, a renamed directory, a repo reading a different ref |
+| Is there any `spec.md` or `wireframe.html` beside a pointer? | a spec copied back in, by hand or by an old habit |
+
+It reads nothing outside this repository, so it needs no access to the Spec
+Repository and no credentials — a consequence of the design rather than a
+shortcut: with no local copy there is nothing to compare against the source.
+
+When `spec_repo` is `none` this repository writes its own specs with
+`/sdd-specify`. Then there are no pointers, every spec under `specs/` is local
+and legitimate, and `scripts/spec-check.sh` is what validates it.
 
 Run `scripts/sdd-check.sh` locally — it is the same code CI runs, so it says the
-same thing — and read which of the three it reported:
+same thing.
 
-| The job says | What happened | Fix |
-| --- | --- | --- |
-| `does not match the hash recorded` | The mirror was edited here | Correct the spec upstream, then `/sdd-sync <id>` again |
-| `matches … only once CR is stripped` | The mirror was committed CRLF, the hash recorded LF | `git config core.autocrlf input`, renormalise the file, commit. `.gitattributes` holds it after that |
-| `is recorded in spec.link.yml but is not in …` | A mirrored file was deleted or renamed | `/sdd-sync <id>` again; the mirror's contents are the source's, not this repo's |
+## Before any command reads: preflight
 
-A mismatch on a spec you did not touch, in a repository where several people
-sync, is almost always the second row — the bytes agree and the way they were
-hashed did not. Re-running `/sdd-sync` fixes the symptom; committing
-`.gitattributes` and taking every digest from `scripts/spec-hash.sh` is what
-stops it recurring.
+`scripts/sdd-preflight.sh` runs before `/sdd-sync`, `/sdd-plan`, `/sdd-tasks`
+and `/sdd-implement`. It fetches and inspects — never merges, rebases or
+switches a branch — and blocks when this repository, the Spec Repository or any
+registered consumer is behind, or when the spec being worked on moved upstream
+since it was last reviewed here. Full behaviour in
+[commands/preflight.md](commands/preflight.md).
+
+It learns which repositories to check from the Spec Repository, which publishes
+them in `docs/consumers.md` as one delimited JSON block:
+
+```markdown
+<!-- sdd:consumers:start -->
+{"version": 1, "consumers": [{"name": "acme-web", "builds": "the web app"}]}
+<!-- sdd:consumers:end -->
+```
+
+fenced as `json` between those two comments. Each `name` is the repository's
+directory name, resolved as a sibling of the Spec Repository clone unless
+`--repo Name=/path` says otherwise. The registry is optional: without it
+preflight checks this repository alone and says so, which is the right answer
+for a single-repo product.
 
 ## Sibling development repositories
 

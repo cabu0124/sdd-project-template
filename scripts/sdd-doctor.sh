@@ -110,13 +110,5 @@ if [ -f .sdd/config.yml ]; then
   fi
 fi
 
-if [ -f scripts/spec-hash.sh ]; then
-  if command -v shasum >/dev/null 2>&1 || command -v sha256sum >/dev/null 2>&1; then
-    pass 'a SHA-256 command is available'
-  else
-    fail 'spec-hash.sh needs shasum or sha256sum'
-  fi
-fi
-
 printf '\n%d error(s), %d warning(s).\n' "$failed" "$warnings"
 [ "$failed" -eq 0 ]

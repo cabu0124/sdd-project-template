@@ -120,4 +120,14 @@ write_spec 010-mirror-superseded superseded \
 printf '%s\n' 'source:' '  id: 004-old' > "$work/010-mirror-superseded/spec.link.yml"
 expect_pass 010-mirror-superseded
 
-echo '10 spec-check fixture(s) passed.'
+# A pointer keeps no copy of the spec, so there is nothing here to validate: the
+# Spec Repository runs these same checks on the spec itself.
+mkdir -p "$work/011-pointer-only"
+printf '%s\n' 'source:' '  id: 004-upstream' > "$work/011-pointer-only/spec.link.yml"
+expect_pass 011-pointer-only
+
+# A directory that is neither a pointer nor a spec is still an error.
+mkdir -p "$work/012-empty"
+expect_fail 012-empty 'has no spec.md'
+
+echo '12 spec-check fixture(s) passed.'

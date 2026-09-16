@@ -7,6 +7,14 @@ repository answers for.
 Argument: a spec id, and optionally `verify` — `/sdd-implement 007 verify` runs
 the verification pass on demand, without waiting for the list to empty.
 
+## Preflight (required)
+
+Before the reads or writes below, run
+`scripts/sdd-preflight.sh --spec <id>` with this command's spec id. Require
+exit 0 for this invocation; on failure report what it said and stop. Implementing
+against a spec that moved upstream is the one mistake nothing later catches.
+See [preflight.md](preflight.md).
+
 ## Read first
 
 - `tasks.md` — the first unchecked task, and `## Notes` for what earlier runs hit.
@@ -36,9 +44,9 @@ re-opening them here is how a plan quietly stops being the plan.
    the plan and why.
 5. Stop. One task per run — the review between tasks is the point of the list.
 6. If implementing reveals the spec was wrong, stop and say so. Never edit the
-   spec to match the code; that inverts the whole method. A mirrored spec — one
-   with a `spec.link.yml` beside it — is corrected in the Spec Repository and
-   re-synced, so every consumer gets the same correction.
+   spec to match the code; that inverts the whole method — and a spec owned by a
+   Spec Repository has no copy here to edit. It is corrected upstream, so every
+   consumer gets the same correction.
 
 ## Verifying
 
@@ -59,7 +67,7 @@ hold.
    run.
 4. Report each passing criterion with the link that proves it — the CI run, the
    pipeline job — and with the spec revision it was proved against, which is
-   `source.commit` in `spec.link.yml`. When the spec is mirrored and spans
+   `source.commit` in `spec.link.yml`. When the spec is owned upstream and spans
    repositories, those two are what its `## Verification` ledger records, and
    the Spec Repository will not move the spec to `done` without them. A pass
    reported without its revision is indistinguishable from a pass against
@@ -74,7 +82,8 @@ hold.
 ## Writes
 
 Source code, tests, and `tasks.md`. The plan only when the user has approved a
-change to it. Never a mirrored `spec.md`, `wireframe.html` or `spec.link.yml`.
+change to it. Never `spec.link.yml`, and never a copy of the spec or its
+wireframe — they are read from the Spec Repository and never written here.
 
 ## Stops when
 

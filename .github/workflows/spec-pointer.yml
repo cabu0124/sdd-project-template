@@ -1,0 +1,27 @@
+# A spec from a Spec Repository is not copied into this repository: specs/<id>/
+# holds a spec.link.yml naming it, and the spec is read from the Spec Repository
+# at the configured ref. This checks that shape — a well-formed pointer, and no
+# spec content copied in beside it.
+#
+# It reads nothing outside this repository, so it needs no access to the Spec
+# Repository and no credentials. There is no local copy left to disagree with
+# the source. See docs/spec-repo.md.
+name: Spec pointer
+
+on:
+  pull_request:
+    branches: [main, develop]
+  push:
+    branches: [main, develop]
+
+permissions:
+  contents: read
+
+jobs:
+  spec-pointer:
+    runs-on: ubuntu-latest
+    steps:
+      - uses: actions/checkout@v4
+
+      - name: Check every spec pointer, and the specs this repository owns
+        run: bash scripts/sdd-check.sh
