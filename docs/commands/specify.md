@@ -6,6 +6,8 @@ boundaries — both belong to `/sdd-plan`.
 
 Argument: a description of the feature. If it is missing, ask for it.
 
+Reasoning: high — it writes WHAT the product must do, and a requirement that can be read two ways is read two ways by everyone who builds it.
+
 ## First: does this repository own its specs?
 
 Read `.sdd/config.yml`.

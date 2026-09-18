@@ -10,6 +10,8 @@ Argument: optional. `--spec <id>` names the spec about to be worked on;
 `--repo Name=/absolute/path` locates a clone that is not a sibling;
 `--branch <name>` is the integration branch when it is not `develop`.
 
+Reasoning: mechanical — it runs a script and reports its exit code.
+
 ## The script does the mechanics
 
 ```bash

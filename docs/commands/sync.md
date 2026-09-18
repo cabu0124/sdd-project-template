@@ -17,6 +17,8 @@ and this repo owns HOW — `plan.md`, `tasks.md`, the code.
 Argument: a spec id as the Spec Repository names it (`001-password-reset`,
 `SPEC-014`, …), or empty to list what is available and stop.
 
+Reasoning: mechanical — the script resolves and writes; what is left is reading the spec and reporting it.
+
 Re-run it any time to pick up an approved change upstream. Running it on a spec
 already registered is a re-sync, and it reports the diff before touching
 anything.

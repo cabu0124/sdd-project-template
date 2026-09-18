@@ -7,6 +7,8 @@ repo's share of it is fixed.
 
 Argument: a spec id.
 
+Reasoning: high — it decides the design and this repository's share of the spec, once, and every task afterwards is built on it.
+
 ## Preflight (required)
 
 Before the reads or writes below, run

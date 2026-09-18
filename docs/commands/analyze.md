@@ -9,6 +9,8 @@ something stops being read.
 
 Argument: a spec id.
 
+Reasoning: high — it is adversarial reading: finding where the plan quietly disagrees with the spec is the whole job.
+
 ## Read first
 
 Everything this gate compares:

@@ -37,6 +37,7 @@ run "Specs have valid structure, statuses and traceability" bash scripts/spec-ch
 run "Spec validator behavioral fixtures" bash scripts/test-spec-check.sh
 run "Spec source authority fixtures" bash scripts/test-spec-sync.sh
 run "Preflight repository and freshness fixtures" bash scripts/test-sdd-preflight.sh
+run "Model routing reaches every generated adapter" bash scripts/test-sdd-onboard.sh
 run "Spec pointers are well formed and carry no copied spec" bash scripts/spec-pointer-check.sh
 
 exit "$failed"

@@ -8,6 +8,8 @@ it does not. A clarification round that invents doubts is worse than none.
 Argument: a spec id. If it is missing, take the most recently modified spec whose
 status is `draft`.
 
+Reasoning: high — telling real ambiguity from a question that only sounds like one is the judgement this command exists for.
+
 **A spec owned upstream is not clarified here.** If the spec directory holds a
 `spec.link.yml`, the spec is owned by the Spec Repository: report the ambiguities
 you found, and stop. They are answered there — with that repository's
