@@ -7,6 +7,8 @@ repository answers for.
 Argument: a spec id, and optionally `verify` — `/sdd-implement 007 verify` runs
 the verification pass on demand, without waiting for the list to empty.
 
+Reasoning: standard — one task at a time against a plan that already decided everything. This is also where most of the tokens go, so the tier is worth what it saves.
+
 ## Preflight (required)
 
 Before the reads or writes below, run

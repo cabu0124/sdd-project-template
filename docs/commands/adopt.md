@@ -7,6 +7,8 @@ inventing anything the original did not say.
 Argument: the path to one artifact. If it is missing, scan, report what you
 found, and stop for the user to choose.
 
+Reasoning: high — recovering WHAT from something already built, without writing today's implementation back into the spec as if it were a requirement.
+
 Run after `/sdd-init existing`, which is what puts `AGENTS.md` and
 `docs/constitution.md` in place. One artifact per run.
 

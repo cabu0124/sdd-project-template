@@ -11,6 +11,8 @@ developer. This one touches no adapter or command files.
 Argument: `new` (no code yet) or `existing` (there is a codebase). If it is
 missing, decide by looking — a repository with source files is `existing`.
 
+Reasoning: standard — it fills templates from what it reads, and asks rather than guesses.
+
 ## Read first
 
 Always: `AGENTS.md`, `docs/constitution.md`, `README.md`,

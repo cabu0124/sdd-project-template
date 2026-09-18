@@ -5,6 +5,8 @@ item can be implemented and verified on its own.
 
 Argument: a spec id.
 
+Reasoning: standard — it orders work already decided in the plan.
+
 ## Preflight (required)
 
 Before the reads or writes below, run
