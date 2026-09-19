@@ -12,12 +12,12 @@
 spec_repo: <spec-repo>            # `spec_repo.name` from .sdd/config.yml
 
 source:
-  id: <NNN-slug>                  # as the Spec Repository numbers it
-  path: <specs_dir>/<NNN-slug>
+  id: <id>-<slug>                  # as the Spec Repository numbers it
+  path: <specs_dir>/<id>-<slug>
   ref: <branch or tag>
   commit: <full sha of that ref when it was last reviewed here>
   status: <draft | review | approved | done | superseded>   # upstream, at sync time
 
 synced:
   at: <YYYY-MM-DD>
-  local_id: <NNN-slug>            # this repository's own number for it
+  local_id: <id>-<slug>            # this repository's own number for it

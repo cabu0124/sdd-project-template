@@ -1,7 +1,7 @@
 # /sdd-adopt — bring a spec over from a previous system
 
 **Goal.** Convert one artifact from an earlier spec system — Spec Kit, Kiro,
-homegrown RFCs, ADRs, a feature doc — into `specs/<NNN-slug>/`, without
+homegrown RFCs, ADRs, a feature doc — into `specs/<id>-<slug>/`, without
 inventing anything the original did not say.
 
 Argument: the path to one artifact. If it is missing, scan, report what you
@@ -65,7 +65,7 @@ Never ask the user to re-derive what is written in the artifact. Read it.
 
 ## Writes
 
-`specs/<NNN-slug>/spec.md`, plus `plan.md` and `tasks.md` when the original
+`specs/<id>-<slug>/spec.md`, plus `plan.md` and `tasks.md` when the original
 had content for them. Never the original — leave it in place until the user
 trusts the conversion. No code.
 

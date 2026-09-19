@@ -49,7 +49,7 @@ is settled once, in the spec's `## Verification` ledger — see `## Done` below.
 | --- | --- | --- |
 | `US:` id | identical | — |
 | Directory slug | identical | — |
-| `NNN` number | — | own sequence |
+| `<id>` | — | own sequence |
 | `spec.md` — Problem, Scope, Requirements, ACs | identical | — |
 | `wireframe.html` | identical, in the repos that have screens | — |
 | Contract (endpoint, payload, event, config key) | one artifact, in the repo that owns it | the reference, and the revision pinned here |
@@ -132,7 +132,7 @@ against it: stub, mock or fake the interface, and make its removal a real task.
 - [ ] **T9** (R2) — Drop the mock, point at the real endpoint (blocked by `api-svc` 012)
 ```
 
-Any task that cannot finish inside this repo carries `(blocked by <repo> NNN)`.
+Any task that cannot finish inside this repo carries `(blocked by <repo> <id>)`.
 An unmarked blocked task looks like a task someone forgot to do.
 
 ## Done

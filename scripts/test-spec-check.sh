@@ -11,6 +11,11 @@ checker="$PWD/scripts/spec-check.sh"
 work=$(mktemp -d)
 trap 'rm -rf "$work"' EXIT
 
+# These fixtures are named NNN-slug, so they answer to that pattern whatever the
+# repository running them has configured. A test that reads the host's settings
+# tests the host, not the validator.
+export SDD_SPEC_ID_PATTERN='[0-9]{3}'
+
 write_spec() {
   local name=$1 status=$2 requirements=$3 criteria=$4 questions=$5 metadata=${6:-}
   local dir="$work/$name"
@@ -120,14 +125,14 @@ write_spec 010-mirror-superseded superseded \
 printf '%s\n' 'source:' '  id: 004-old' > "$work/010-mirror-superseded/spec.link.yml"
 expect_pass 010-mirror-superseded
 
-# A pointer keeps no copy of the spec, so there is nothing here to validate: the
-# Spec Repository runs these same checks on the spec itself.
-mkdir -p "$work/011-pointer-only"
-printf '%s\n' 'source:' '  id: 004-upstream' > "$work/011-pointer-only/spec.link.yml"
-expect_pass 011-pointer-only
-
-# A directory that is neither a pointer nor a spec is still an error.
-mkdir -p "$work/012-empty"
-expect_fail 012-empty 'has no spec.md'
+# A repository whose ids come from a backlog declares its own shape rather than
+# forking this script. The same directory is wrong under one pattern and right
+# under the other.
+write_spec F-011-from-a-backlog approved \
+  '- **R1** - Backlog behavior.' \
+  '- [ ] **AC1** (R1) - Observable result.' \
+  ''
+expect_fail F-011-from-a-backlog 'is not <id>-<slug>'
+SDD_SPEC_ID_PATTERN='F-[0-9]+' expect_pass F-011-from-a-backlog
 
 echo '12 spec-check fixture(s) passed.'

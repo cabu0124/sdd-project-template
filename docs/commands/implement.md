@@ -38,7 +38,10 @@ re-opening them here is how a plan quietly stops being the plan.
 
 ## Steps
 
-1. Read. Identify the first unchecked task and what would prove it done.
+1. Read. Identify the first unchecked task and what would prove it done. When
+  finding where it belongs would take more than a few reads, hand that to the
+  `code-surveyor` subagent and work from its report rather than opening the files
+  it already looked at.
 2. Implement it, following the conventions already in the code.
 3. Run the test and lint commands from `AGENTS.md`. Failing means not done.
 4. Check the task off in `tasks.md`. Add a line to `## Notes` only for something

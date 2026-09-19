@@ -1,7 +1,7 @@
 # /sdd-plan — technical design for an approved spec
 
 **Goal.** Decide HOW **this repository** implements the approved spec, and write
-it to `specs/<NNN-slug>/plan.md`. The spec is the same in every repo that
+it to `specs/<id>-<slug>/plan.md`. The spec is the same in every repo that
 implements it; this is the file where it becomes technology, and where this
 repo's share of it is fixed.
 
@@ -30,7 +30,7 @@ upstream. See [preflight.md](preflight.md).
   is not written here: `/sdd-sync <id>` registers it.
 - `spec.link.yml`, when the spec has one — which spec this directory implements,
   and the ref it is read from. Check it with
-  `scripts/spec-pointer-check.sh specs/<NNN-slug>`: a failure means the pointer
+  `scripts/spec-pointer-check.sh specs/<id>-<slug>`: a failure means the pointer
   is wrong or a copy was put back, and that is a stop, not a detail.
   The approval gate is upstream's `status:`; this repo does not grant it.
 - `AGENTS.md` — stack, conventions, boundaries, what is off-limits.
@@ -58,7 +58,11 @@ convention here, and reading it is faster than asking about it.
 
 ## Steps
 
-1. Read. State which existing patterns you will follow and which dependencies are
+1. Survey, then read. Hand the reconnaissance to the `code-surveyor` subagent —
+  which files the requirements touch, what conventions they follow, what already
+  does part of this, what is in the way — and **do not read the files its report
+  summarises**. Read the spec and `AGENTS.md` yourself: you are planning against
+  them. Then state which existing patterns you will follow and which dependencies are
    already present, so a wrong assumption is caught before it is designed in.
 2. Ask what only the user can decide.
 3. Scope this repo first, when the spec spans several: which requirements it
@@ -93,9 +97,9 @@ convention here, and reading it is faster than asking about it.
 
 ## Writes
 
-`specs/<NNN-slug>/plan.md`. No `tasks.md`, no code.
+`specs/<id>-<slug>/plan.md`. No `tasks.md`, no code.
 
 ## Stops when
 
 `plan.md` is written. Report the decisions taken and what you rejected. The user
-approves the approach; then `/sdd-tasks <NNN>`.
+approves the approach; then `/sdd-tasks <id>`.

@@ -31,3 +31,22 @@ spec_repo:
 
   # Directory inside the Spec Repository holding one directory per spec.
   specs_dir: specs
+
+# How specs are identified. It has to match the Spec Repository's own setting:
+# the id in specs/<id>-<slug>/ here is the id it uses there.
+spec_id:
+  # The shape of the id, without the slug.
+  #
+  #   [0-9]{3}          007-password-reset      the default: a zero-padded sequence
+  #   F-[0-9]+          F-012-tutorial-scenes   an id that comes from a backlog
+  #   [A-Z]+-[0-9]+     ACME-1234-export-csv    a tracker key
+  pattern: '[0-9]{3}'
+
+  # Where a new id comes from when a command is given none:
+  #
+  #   sequential  suggest the next free one and ask before writing
+  #   given       ask for it and stop
+  source: sequential
+
+  # Shown when a command has to ask for an id.
+  example: '007'

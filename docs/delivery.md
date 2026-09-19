@@ -15,8 +15,8 @@ feature/* ──▶ develop ──▶ main ──▶ deploy ──▶ turn the f
 | --- | --- | --- |
 | `main` | forever | what is in production |
 | `develop` | forever | everything integrated, waiting to be promoted |
-| `feature/<NNN>-<slug>` | days | one spec's work |
-| `fix/<NNN>-<slug>` | hours | a defect, from `develop` |
+| `feature/<id>-<slug>` | days | one spec's work |
+| `fix/<id>-<slug>` | hours | a defect, from `develop` |
 | `hotfix/<slug>` | hours | a production defect, from `main` |
 
 - **A branch opens from the branch it merges back into.** `feature/*` and

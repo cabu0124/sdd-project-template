@@ -1,4 +1,4 @@
-# Plan — Spec NNN
+# Plan — Spec <id>
 
 - **Repo:** <this-repo> · <role: backend | frontend | mobile | infra | ...>
 
@@ -16,7 +16,7 @@ Delete this section when the spec is single-repo: everything in it is this repo'
 See `docs/cross-repo.md`, if present.>
 
 - **Here:** R1, R2 — AC1, AC2, AC4
-- **Elsewhere:** R3 — `<repo>` NNN <what it covers>
+- **Elsewhere:** R3 — `<repo>` <id> <what it covers>
 
 ## Approach
 
@@ -52,7 +52,7 @@ revision it pinned. See `docs/cross-repo.md`, if present.>
 
 <Delete when the change lands finished in one merge — most do.
 
-- **Flag:** `<NNN-slug>` — <provider or mechanism>, default off
+- **Flag:** `<id>-<slug>` — <provider or mechanism>, default off
 - **Reaches `main` off after:** <which task>
 - **Turned on when:** <the observable condition, not a date>
 - **Removed by:** <the task in `tasks.md` that deletes it>
