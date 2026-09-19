@@ -58,7 +58,8 @@ new_repo acme-web
 new_repo acme-api
 
 mkdir -p "$work/acme-web/.sdd" "$work/acme-web/specs" "$work/acme-web/scripts"
-cp "$scripts/spec-sync.sh" "$scripts/spec-pointer-check.sh" "$scripts/sdd-preflight.sh" "$work/acme-web/scripts/"
+cp "$scripts/spec-sync.sh" "$scripts/spec-pointer-check.sh" "$scripts/sdd-preflight.sh" \
+  "$scripts/sdd-lib.sh" "$scripts/sdd-recall.sh" "$work/acme-web/scripts/"
 printf 'spec_repo:\n  name: acme-specs\n  path: %s\n  remote: %s\n  ref: main\n  specs_dir: specs\n' \
   "$work/cache" "$work/upstream.git" > "$work/acme-web/.sdd/config.yml"
 git -C "$work/acme-web" add .
