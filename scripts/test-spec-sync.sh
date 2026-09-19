@@ -9,6 +9,8 @@ fi
 
 sync_script="$PWD/scripts/spec-sync.sh"
 pointer_script="$PWD/scripts/spec-pointer-check.sh"
+lib_script="$PWD/scripts/sdd-lib.sh"
+recall_script="$PWD/scripts/sdd-recall.sh"
 work=$(mktemp -d)
 trap 'rm -rf "$work"' EXIT
 
@@ -29,7 +31,7 @@ git -C "$work/cache" commit -qam unpublished
 unpublished=$(git -C "$work/cache" rev-parse HEAD)
 
 mkdir -p "$work/project/.sdd" "$work/project/specs" "$work/project/scripts"
-cp "$sync_script" "$pointer_script" "$work/project/scripts/"
+cp "$sync_script" "$pointer_script" "$lib_script" "$recall_script" "$work/project/scripts/"
 git -C "$work/project" init -q
 
 write_config() {

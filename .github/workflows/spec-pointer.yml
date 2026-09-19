@@ -24,4 +24,4 @@ jobs:
       - uses: actions/checkout@v4
 
       - name: Check every spec pointer, and the specs this repository owns
-        run: bash scripts/sdd-check.sh
+        run: bash scripts/sdd-check.sh --verbose

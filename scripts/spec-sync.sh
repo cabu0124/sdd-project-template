@@ -28,9 +28,13 @@
 
 set -euo pipefail
 
+here=$(cd "$(dirname -- "${BASH_SOURCE[0]}")" && pwd)
+
 if root=$(git rev-parse --show-toplevel 2>/dev/null); then
   cd "$root"
 fi
+
+. "$here/sdd-lib.sh" || { echo "spec-sync: scripts/sdd-lib.sh is missing" >&2; exit 1; }
 
 SPEC_POINTER=scripts/spec-pointer-check.sh
 CONFIG=.sdd/config.yml
@@ -52,6 +56,19 @@ id=""
 requested_commit=""
 show_path=""
 
+# A spec diff is the one thing here worth reading closely, but not at any
+# length: past the head and tail the rest stays one recall away.
+show_patch() {
+  if sdd_verbose; then
+    cat "$1"
+    return
+  fi
+  sdd_truncate_lines 40 10 < "$1"
+  if [ "$(wc -l < "$1")" -gt 50 ]; then
+    printf '[full output: scripts/sdd-recall.sh %s]\n' "$(bash "$here/sdd-recall.sh" --save < "$1")"
+  fi
+}
+
 while [ "$#" -gt 0 ]; do
   case "$1" in
     --write|-w)
@@ -61,6 +78,7 @@ while [ "$#" -gt 0 ]; do
       requested_commit=$1
       ;;
     --offline) offline=1 ;;
+    --verbose|-v) SDD_VERBOSE=1 ;;
     --list|-l) mode=list ;;
     --resolve) mode=resolve ;;
     --show)
@@ -288,10 +306,14 @@ if [ "$fresh" -eq 0 ]; then
         changed=1
         continue
       fi
+      patch=$(mktemp)
       diff -u \
         <(git -C "$src" show "$recorded_commit:$specs_dir/$id/$file") \
         <(git -C "$src" show "$commit:$specs_dir/$id/$file") \
-        --label "a/$file ($recorded_commit)" --label "b/$file ($commit)" && continue
+        --label "a/$file ($recorded_commit)" --label "b/$file ($commit)" > "$patch" \
+        && { rm -f "$patch"; continue; }
+      show_patch "$patch"
+      rm -f "$patch"
       changed=1
     done < <({ files_at "$recorded_commit"; files_at "$commit"; } | sort -u)
   fi
