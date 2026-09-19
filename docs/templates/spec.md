@@ -1,4 +1,4 @@
-# Spec NNN — [feature name]
+# Spec <id> — [feature name]
 
 - **Status:** draft <!-- draft | review | approved | done | superseded -->
 - **Created:** YYYY-MM-DD
@@ -7,8 +7,8 @@
 - **Consumers:** [repo] · [repo] <!-- repositories expected to implement it; "unknown" is an honest answer -->
 - **Verifier:** [repo] <!-- multi-repo specs only; delete when one repository builds all of it -->
 - **US:** [id or link] <!-- delete if none -->
-- **Supersedes:** [NNN-slug] <!-- delete if none -->
-- **Superseded by:** [NNN-slug] <!-- delete unless the status is superseded -->
+- **Supersedes:** [<id>-<slug>] <!-- delete if none -->
+- **Superseded by:** [<id>-<slug>] <!-- delete unless the status is superseded -->
 
 WHAT the product must do, and why. No technology and no repository: the same spec
 holds for every repo that implements it. HOW, and which part each repo builds,

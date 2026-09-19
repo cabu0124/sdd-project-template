@@ -91,7 +91,7 @@ has its own version of what was agreed, the hash recorded beside it agrees with
 it, and everything looks right locally while every other consumer builds
 something else.
 
-So the copy is gone. `specs/<NNN-slug>/spec.link.yml` records which spec this
+So the copy is gone. `specs/<id>-<slug>/spec.link.yml` records which spec this
 directory implements and where to read it; the spec itself stays in the Spec
 Repository and is read from there at `ref`.
 

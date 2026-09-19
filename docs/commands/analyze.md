@@ -84,4 +84,4 @@ wireframe, `/sdd-plan` for the plan, `/sdd-tasks` for the task list.
 ## Stops when
 
 The findings are reported. Next: fix what is worth fixing, then
-`/sdd-implement <NNN>`.
+`/sdd-implement <id>`.

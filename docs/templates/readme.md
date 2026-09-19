@@ -68,7 +68,7 @@ specs/      one directory per feature — spec.link.yml · plan.md · tasks.md
 > [!IMPORTANT]
 > **No code without an approved spec.** Specs live in <the Spec Repository —
 > name and link it; delete this clause if this repo owns its specs>, and each one
-> is read from there, never copied here: `specs/NNN-slug/spec.link.yml` says
+> is read from there, never copied here: `specs/<id>-<slug>/spec.link.yml` says
 > which spec, before any work starts. The agent stops
 > for approval **after the plan**.
 
@@ -94,7 +94,7 @@ first rather than assuming.
 | `docs/commands/` | The workflow behind each command |
 | `docs/spec-repo.md` | Where the specs come from, and why no copy is kept here |
 | `.sdd/config.yml` | The Spec Repository: path, remote, ref |
-| `specs/NNN-slug/` | One feature: `spec.link.yml` · `plan.md` · `tasks.md` |
+| `specs/<id>-<slug>/` | One feature: `spec.link.yml` · `plan.md` · `tasks.md` |
 
 > [!TIP]
 > **New here?** Set up your agent tool once with `docs/commands/onboard.md` — the
@@ -104,7 +104,7 @@ first rather than assuming.
 
 | | |
 | --- | --- |
-| Branch from | `develop` — `feature/<NNN>-<slug>` or `fix/<NNN>-<slug>` |
+| Branch from | `develop` — `feature/<id>-<slug>` or `fix/<id>-<slug>` |
 | Pull request title | Conventional Commits — `feat(007): send the reset email` |
 | Merge | squash into `develop`; `develop` → `main` promotes to production |
 | Release | automatic from `main`: a SemVer tag and a GitHub Release |

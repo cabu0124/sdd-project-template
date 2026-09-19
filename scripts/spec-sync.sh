@@ -19,7 +19,7 @@
 # plan and the tasks built on it.
 #
 # The spec stays in the Spec Repository and is read from there at `ref`. What is
-# written here is specs/<NNN-slug>/spec.link.yml, whose `source.commit` records
+# written here is specs/<id>-<slug>/spec.link.yml, whose `source.commit` records
 # the revision last reviewed — which is what makes "a requirement moved since
 # you planned" a reviewable diff rather than a silent change.
 #

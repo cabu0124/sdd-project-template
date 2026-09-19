@@ -1,6 +1,6 @@
 # /sdd-sync — register the spec this repository implements
 
-**Goal.** Write `specs/<NNN-slug>/spec.link.yml`, which says which spec in the
+**Goal.** Write `specs/<id>-<slug>/spec.link.yml`, which says which spec in the
 product's Spec Repository this directory implements and where to read it. After
 this, `/sdd-plan` has something to plan against.
 
@@ -100,11 +100,11 @@ Its exit code is the whole interface:
 6. Never edit the spec to fit this repository. A spec you have to reword to make
    it apply here was written with a repo in mind, and the fix is `/sdd-clarify`
    upstream, for every consumer.
-7. Never write `plan.md`, `tasks.md` or code. `/sdd-plan <NNN>` is next.
+7. Never write `plan.md`, `tasks.md` or code. `/sdd-plan <id>` is next.
 
 ## Writes
 
-Through the script: `specs/<NNN-slug>/spec.link.yml`, and nothing else. No spec
+Through the script: `specs/<id>-<slug>/spec.link.yml`, and nothing else. No spec
 content is written anywhere, here or upstream. A matching `path` cache may
 receive fetched Git objects and refs.
 
@@ -113,5 +113,5 @@ receive fetched Git objects and refs.
 The pointer is written, or a pending re-sync has
 been reported and left with the user. Either way, name the source commit, the
 local number, the status upstream, and whether anything already planned here is
-invalidated. Next: `/sdd-plan <NNN>` once the spec is published upstream —
+invalidated. Next: `/sdd-plan <id>` once the spec is published upstream —
 `approved`, or `done` if the work was already delivered elsewhere.

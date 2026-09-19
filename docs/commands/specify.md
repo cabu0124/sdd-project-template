@@ -1,10 +1,12 @@
 # /sdd-specify — write a new spec
 
-**Goal.** Turn a feature request into `specs/<NNN-slug>/spec.md`: WHAT and
+**Goal.** Turn a feature request into `specs/<id>-<slug>/spec.md`: WHAT and
 WHY, testable and approvable. No technical decisions and no repository
 boundaries — both belong to `/sdd-plan`.
 
-Argument: a description of the feature. If it is missing, ask for it.
+Argument: `[<id>] <description>` — the id this spec will carry, and what the
+feature is. The id is optional only where `.sdd/config.yml` says
+`spec_id.source: sequential`; see step 3. If the description is missing, ask for it.
 
 Reasoning: high — it writes WHAT the product must do, and a requirement that can be read two ways is read two ways by everyone who builds it.
 
@@ -28,8 +30,9 @@ Read `.sdd/config.yml`.
 - `specs/` — the next free number, and whether an existing spec already
   covers part of this. Overlapping scope is a question, not a silent merge.
 - `docs/templates/spec.md` — the structure to produce.
-- `docs/templates/wireframe.html` — only if `AGENTS.md` says this project has a
-  user interface and this feature puts something on a screen.
+- `docs/skills/drawing-wireframes/` — only if `AGENTS.md` says this project has a
+  user interface and this feature puts something on a screen. The template it
+  points to is read by the subagent that draws, not here.
 - `docs/cross-repo.md` — only if present and the feature spans several
   repositories. `/sdd-init` creates it for multi-repo products.
 - `docs/spec-repo.md` — the ownership rule this command has just checked.
@@ -52,8 +55,11 @@ of being guessed. That is what the section is for, and `/sdd-clarify` closes it.
 1. Read, then restate the request in two or three sentences and name what you
    understood to be out of scope. A wrong reading surfaces here, cheaply.
 2. Ask what is missing.
-3. Take the next free `NNN` in `specs/` — zero-padded, never reused — and a
-   short slug. The number is the permanent id for commits, branches and issues.
+3. Settle the id before writing anything. `.sdd/config.yml` says where it comes
+  from: **given as an argument**, use it exactly as written; **absent with
+  `source: sequential`**, suggest the next free one in `specs/` and ask before
+  continuing; **absent with `source: given`**, ask for it and stop. Then add a
+  short slug. The id is permanent — commits, branches and issues.
 4. Write `spec.md` from the template. Requirements are numbered `R1`, `R2`, …;
    every acceptance criterion names the requirement it verifies and is phrased so
    its result is observable. If you cannot say how a requirement would be
@@ -63,15 +69,13 @@ of being guessed. That is what the section is for, and `/sdd-clarify` closes it.
     header — owner, dates, and the repositories expected to implement it, or
     `unknown` when nobody has decided yet.
 5. Wireframe — only when `AGENTS.md` says this project has a user interface *and*
-   this feature puts something on a screen. Copy `docs/templates/wireframe.html`
-   into the spec directory and draw it: one section per screen in scope and no
-   screen the spec does not name, each at the project's breakpoints, with the
-   states the spec calls for, and the banner filled with this spec's path. Draw
-   arrangement, hierarchy and on-screen content — never color, type, iconography
-   or components: a wireframe that looks finished gets reviewed as a design
-   instead of a layout. Every element traces to a requirement, so if you find
-   yourself drawing something no requirement asks for, the spec is incomplete.
-   Fix the spec; do not invent it here.
+   this feature puts something on a screen. Follow
+   `docs/skills/drawing-wireframes/`, which carries this project's notation and
+   the rules a wireframe here must follow. Hand the first drawing to the
+   `wireframe-artist` subagent: it writes `specs/<id>-<slug>/wireframe.html`
+   itself and reports rather than returning the markup — the template is large,
+   and handing it back would undo the point of delegating. Iterate here
+   afterwards, reading the drawn file rather than the template again.
 6. Cross-repo: one spec for the product, the same in every repo that implements
    it. Do not split the work between repos here and do not write a contract —
    both are `/sdd-plan`'s job. If a sibling repo already has this spec, copy it
@@ -80,13 +84,13 @@ of being guessed. That is what the section is for, and `/sdd-clarify` closes it.
    and name the `Verifier:` responsible for integrated criteria. A single-repo
    spec deletes the section and the header line. Follow `docs/cross-repo.md` if
    present.
-7. Run `bash scripts/spec-check.sh --root specs specs/<NNN-slug>` and
+7. Run `bash scripts/spec-check.sh --root specs specs/<id>-<slug>` and
    fix every reported structural or traceability error.
 8. Report the requirements and anything left open.
 
 ## Writes
 
-`specs/<NNN-slug>/spec.md`, plus `wireframe.html` beside it when step 5
+`specs/<id>-<slug>/spec.md`, plus `wireframe.html` beside it when step 5
 applies. Nothing else — no `plan.md`, no `tasks.md`, no code.
 
 ## Stops when
@@ -94,4 +98,4 @@ applies. Nothing else — no `plan.md`, no `tasks.md`, no code.
 `spec.md` is written, and its wireframe if the feature has screens. Approval
 belongs to the user: they set `status: approved`, and `## Open questions` must be
 empty first. Next: `/sdd-clarify` if anything is open, otherwise
-`/sdd-plan <NNN>` once approved.
+`/sdd-plan <id>` once approved.

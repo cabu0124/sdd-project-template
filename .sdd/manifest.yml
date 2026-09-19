@@ -30,6 +30,9 @@ managed:
   - .github/workflows/spec-pointer.yml
   - .sdd/manifest.yml
   - docs/agents/.gitkeep
+  - docs/agents/code-surveyor.md
+  - docs/agents/spec-explorer.md
+  - docs/agents/wireframe-artist.md
   - docs/commands/adopt.md
   - docs/commands/analyze.md
   - docs/commands/clarify.md
@@ -45,6 +48,7 @@ managed:
   - docs/delivery.md
   - docs/example.md
   - docs/skills/.gitkeep
+  - docs/skills/delegating-exploration/SKILL.md
   - docs/skills/reading-condensed-output/SKILL.md
   - docs/spec-repo.md
   - docs/standards/.gitkeep
@@ -57,7 +61,6 @@ managed:
   - docs/templates/spec.md
   - docs/templates/standard.md
   - docs/templates/tasks.md
-  - docs/templates/wireframe.html
   - docs/token-budget.md
   - scripts/sdd-check.sh
   - scripts/sdd-compact.sh
@@ -86,6 +89,10 @@ seeded:
   - AGENTS.md
   - README.md
   - docs/constitution.md
+  # The wireframe kit and its notation are the product's, not the template's: a
+  # starting point, developed here, and never overwritten by an upgrade.
+  - docs/skills/drawing-wireframes/SKILL.md
+  - docs/templates/wireframe.html
 
 ignored:
   - CHANGELOG.md

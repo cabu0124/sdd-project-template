@@ -127,7 +127,8 @@ has no tests.
     `docs/templates/readme.md` too —
     it is spent, the README is written. Delete `docs/example.md` too — it
     documents the two templates working together, not this project. With no user interface, delete
-    `docs/templates/wireframe.html` as well — nothing will read it. Single-repo
+    `docs/templates/wireframe.html` and `docs/skills/drawing-wireframes/` as
+    well — nothing will read them. Single-repo
     product: delete `docs/templates/cross-repo.md`, it was not needed. A repo
     whose specs come from a Spec Repository never writes one, so delete
     `docs/templates/spec.md` as well — the spec is read from upstream and no

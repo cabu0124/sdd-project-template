@@ -1,6 +1,6 @@
 # /sdd-tasks — break a plan into commit-sized units
 
-**Goal.** Write `specs/<NNN-slug>/tasks.md`: an ordered list where every
+**Goal.** Write `specs/<id>-<slug>/tasks.md`: an ordered list where every
 item can be implemented and verified on its own.
 
 Argument: a spec id.
@@ -45,7 +45,7 @@ depends on how much the user wants landing in one commit.
    this; it usually means the plan missed something, and that is a `/sdd-plan`
    fix, not a task you invent here.
 5. Cross-repo: a task that cannot finish inside this repo is marked
-   `(blocked by <repo> NNN)`, and every mock written against a contract gets its
+   `(blocked by <repo> <id>)`, and every mock written against a contract gets its
    own removal task.
 6. A plan with a `## Rollout` flag carries the task that removes it — the flag,
    its reads and the old path, in one commit — last in the list, because it
@@ -58,9 +58,9 @@ depends on how much the user wants landing in one commit.
 
 ## Writes
 
-`specs/<NNN-slug>/tasks.md`. No code.
+`specs/<id>-<slug>/tasks.md`. No code.
 
 ## Stops when
 
-`tasks.md` is written and coverage is reported. Next: `/sdd-analyze <NNN>` when
-the spec is large or the stakes are high, otherwise `/sdd-implement <NNN>`.
+`tasks.md` is written and coverage is reported. Next: `/sdd-analyze <id>` when
+the spec is large or the stakes are high, otherwise `/sdd-implement <id>`.
