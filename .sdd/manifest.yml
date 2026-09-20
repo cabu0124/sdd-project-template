@@ -74,6 +74,7 @@ managed:
   - scripts/spec-check.sh
   - scripts/spec-pointer-check.sh
   - scripts/spec-sync.sh
+  - scripts/spec-wireframe.sh
   - scripts/test-sdd-compact.sh
   - scripts/test-sdd-hook.sh
   - scripts/test-sdd-onboard.sh
@@ -82,6 +83,7 @@ managed:
   - scripts/test-sdd-upgrade.sh
   - scripts/test-spec-check.sh
   - scripts/test-spec-sync.sh
+  - scripts/test-spec-wireframe.sh
 
 seeded:
   - .sdd/config.yml
