@@ -32,7 +32,6 @@ managed:
   - docs/agents/.gitkeep
   - docs/agents/code-surveyor.md
   - docs/agents/spec-explorer.md
-  - docs/agents/wireframe-artist.md
   - docs/commands/adopt.md
   - docs/commands/analyze.md
   - docs/commands/clarify.md
