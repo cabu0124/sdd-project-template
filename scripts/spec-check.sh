@@ -99,6 +99,12 @@ check_one() {
   is_mirror=0
   [ -f "$dir/spec.link.yml" ] && is_mirror=1
 
+  # A pointer-only directory is what /sdd-sync writes: the spec is upstream, and
+  # scripts/spec-pointer-check.sh is what validates it.
+  if [ ! -f "$spec" ] && [ "$is_mirror" -eq 1 ]; then
+    return
+  fi
+
   if [ ! -f "$spec" ]; then
     echo "::error::$dir has no spec.md"
     failed=1

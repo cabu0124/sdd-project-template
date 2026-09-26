@@ -78,9 +78,12 @@ Two numbers, one join key — the rule `docs/cross-repo.md` (if present) already
 | Number | its own sequence | its own sequence |
 | Slug | identical | identical |
 
-`001-password-reset` upstream may be `007-password-reset` here. The slug is what
-makes the story greppable across repositories; `spec.link.yml` holds the exact
-mapping, so nothing depends on the numbers matching.
+With `spec_id.source: given` — ids that come from a backlog, like `F-014` —
+there is only one number: the upstream id is the local directory, unchanged.
+
+Otherwise `001-password-reset` upstream may be `007-password-reset` here. The
+slug is what makes the story greppable across repositories; `spec.link.yml`
+holds the exact mapping, so nothing depends on the numbers matching.
 
 ## There is no copy, and that is the design
 

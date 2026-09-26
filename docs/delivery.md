@@ -137,7 +137,8 @@ turns that title into the commit, so the title *is* the history.
 
 A `!` before the colon, or a `BREAKING CHANGE:` footer, is **MAJOR** whatever the
 type says. Scope is optional, and when the work belongs to a spec it is the spec
-number: `feat(007): send the reset email`.
+number: `feat(007): send the reset email`. Scopes are lowercase — the title check
+rejects anything else — so a backlog id like `F-014` is written `feat(f-014): …`.
 
 ## Versioning
 
