@@ -143,6 +143,10 @@ has no tests.
     created from a template inherits it, and a project whose changelog opens with
     someone else's versions is lying from its first line. The first release here
     writes a new one.
+    Every template file deleted here goes under `keep:` in `.sdd/template.yml`
+    — now if it exists, otherwise right after `scripts/sdd-upgrade.sh --adopt`
+    creates it — or the first upgrade brings them all back. See
+    [upgrade.md](upgrade.md).
 11. If you found a previous spec system, list its specs and stop there. Do not
     convert them — say how many there are and that `/sdd-adopt <path>` takes them
     one at a time.

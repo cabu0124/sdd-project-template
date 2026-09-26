@@ -201,6 +201,10 @@ while IFS= read -r path; do
     record gone "$path"
   elif [ -z "$remote" ]; then
     :
+  elif [ -z "$local_sha" ] && is_kept "$path"; then
+    # Deleted on purpose — /sdd-init removes the templates a repository will
+    # never use. Kept means absent, too, or every upgrade brings them back.
+    record kept "$path"
   elif [ -z "$local_sha" ]; then
     record new "$path" "$remote"
   elif [ "$remote" = "$local_sha" ]; then
@@ -216,10 +220,12 @@ done < <(manifest_list managed)
 
 # A seeded file is delivered once and then belongs to the repository — but one
 # that was never delivered has nothing to belong to. Create it when it is
-# missing, and never touch it when it is already there.
+# missing, and never touch it when it is already there — or when keep: says
+# its absence is the repository's decision.
 while IFS= read -r path; do
   [ -n "$path" ] || continue
   [ -f "$path" ] && continue
+  is_kept "$path" && { record kept "$path"; continue; }
   remote=$(sha_at "$path")
   [ -n "$remote" ] && record new "$path" "$remote"
 done < <(manifest_list seeded)
