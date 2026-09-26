@@ -46,6 +46,10 @@ spec_id:
   #
   #   sequential  suggest the next free one and ask before writing
   #   given       ask for it and stop
+  #
+  # It also decides the local directory /sdd-sync writes: `given` keeps the
+  # upstream id (a backlog key every repository shares), `sequential` numbers
+  # the spec here after the slug the upstream id carries.
   source: sequential
 
   # Shown when a command has to ask for an id.

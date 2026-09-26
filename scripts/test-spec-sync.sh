@@ -101,4 +101,25 @@ if (cd "$work/project" && bash scripts/spec-pointer-check.sh) >"$work/localid.ou
 fi
 grep -Fq 'local id is the directory name' "$work/localid.out"
 
-echo '9 spec-sync authority fixture(s) passed.'
+# Backlog ids: `given` keeps the upstream id as the local directory, and
+# `sequential` numbers it here after the slug the upstream id carries.
+mkdir -p "$work/cache/specs/F-014-from-backlog"
+printf '%s\n' '# Spec F-014 - From backlog' '- **Status:** approved' > "$work/cache/specs/F-014-from-backlog/spec.md"
+git -C "$work/cache" add .
+git -C "$work/cache" commit -qm backlog
+git -C "$work/cache" push -q "$work/upstream.git" HEAD:main
+rm -rf "$work/project/specs/001-one"
+
+write_config "$work/cache" "$work/upstream.git"
+printf 'spec_id:\n  pattern: %s\n  source: given\n' "'F-[0-9]+'" >> "$work/project/.sdd/config.yml"
+given=$(cd "$work/project" && bash scripts/spec-sync.sh F-014-from-backlog 2>&1) || true
+printf '%s\n' "$given" | grep -Fq 'local:  specs/F-014-from-backlog' \
+  || { echo "given id was renumbered: $given" >&2; exit 1; }
+
+write_config "$work/cache" "$work/upstream.git"
+printf 'spec_id:\n  pattern: %s\n  source: sequential\n' "'F-[0-9]+'" >> "$work/project/.sdd/config.yml"
+sequential=$(cd "$work/project" && bash scripts/spec-sync.sh F-014-from-backlog 2>&1) || true
+printf '%s\n' "$sequential" | grep -Fq 'local:  specs/001-from-backlog' \
+  || { echo "sequential slug kept the upstream id: $sequential" >&2; exit 1; }
+
+echo '11 spec-sync authority fixture(s) passed.'

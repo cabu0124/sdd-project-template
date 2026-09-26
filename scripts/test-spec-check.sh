@@ -135,4 +135,13 @@ write_spec F-011-from-a-backlog approved \
 expect_fail F-011-from-a-backlog 'is not <id>-<slug>'
 SDD_SPEC_ID_PATTERN='F-[0-9]+' expect_pass F-011-from-a-backlog
 
-echo '12 spec-check fixture(s) passed.'
+# A pointer-only directory is what /sdd-sync writes. Its spec is upstream, and
+# scripts/spec-pointer-check.sh validates it; here it is neither a spec nor an
+# error. A directory with neither file still is.
+mkdir -p "$work/012-pointer-only"
+printf '%s\n' 'source:' '  id: F-014-upstream' > "$work/012-pointer-only/spec.link.yml"
+expect_pass 012-pointer-only
+mkdir -p "$work/013-empty"
+expect_fail 013-empty 'has no spec.md'
+
+echo '14 spec-check fixture(s) passed.'

@@ -49,6 +49,14 @@ config_field() {
     | sed -e 's/[[:space:]]*#.*$//' -e 's/\r$//' -e 's/^"//' -e 's/"$//' -e "s/^'//" -e "s/'\$//" -e 's/[[:space:]]*$//'
 }
 
+# A value from the `spec_id:` block of .sdd/config.yml, by key.
+spec_id_field() {
+  sed -n '/^spec_id:/,/^[^[:space:]#]/p' "$CONFIG" \
+    | sed -n "s/^[[:space:]][[:space:]]*$1:[[:space:]]*//p" \
+    | head -n1 \
+    | sed -e 's/[[:space:]]*#.*$//' -e 's/\r$//' -e 's/^"//' -e 's/"$//' -e "s/^'//" -e "s/'\$//" -e 's/[[:space:]]*$//'
+}
+
 write=0
 offline=0
 mode=sync
@@ -239,15 +247,25 @@ for link in specs/*/spec.link.yml; do
 done
 
 if [ -z "$dir" ]; then
-  max=0
-  for existing in specs/*/; do
-    n=$(basename "$existing" | sed -n 's/^\([0-9][0-9]*\)-.*/\1/p')
-    [ -n "$n" ] || continue
-    n=$((10#$n))
-    [ "$n" -gt "$max" ] && max=$n
-  done
-  slug=$(printf '%s' "$id" | sed 's/^[0-9][0-9]*-//')
-  dir=$(printf 'specs/%03d-%s' $((max + 1)) "$slug")
+  # `given` ids come from a backlog every repository shares, so the upstream id
+  # is the local one. `sequential` numbers the spec here, after the slug the
+  # upstream id carries once its own id is stripped.
+  id_pattern=$(spec_id_field pattern)
+  [ -n "$id_pattern" ] || id_pattern='[0-9]{3}'
+  if [ "$(spec_id_field source)" = given ] && [[ "$id" =~ ^${id_pattern}- ]]; then
+    dir="specs/$id"
+  else
+    max=0
+    for existing in specs/*/; do
+      n=$(basename "$existing" | sed -n 's/^\([0-9][0-9]*\)-.*/\1/p')
+      [ -n "$n" ] || continue
+      n=$((10#$n))
+      [ "$n" -gt "$max" ] && max=$n
+    done
+    slug=$(printf '%s' "$id" | sed 's/^[0-9][0-9]*-//')
+    [[ "$id" =~ ^${id_pattern}-(.+)$ ]] && slug=${BASH_REMATCH[1]}
+    dir=$(printf 'specs/%03d-%s' $((max + 1)) "$slug")
+  fi
   fresh=1
 else
   fresh=0
