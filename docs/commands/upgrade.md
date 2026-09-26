@@ -81,6 +81,11 @@ keep:
 They are reported as `kept` rather than `conflict`, never written, and do not
 count as work pending — so `--check` goes back to exiting 0 in CI.
 
+A file the repository **deleted** on purpose goes there too — `/sdd-init`
+removes the templates a repository will never use, such as
+`docs/templates/spec.md` when specs come from a Spec Repository. Kept covers
+absence: the file is reported as `kept`, not offered back as `new`.
+
 Use it for a decision you have already made, and not to silence something you
 have not looked at yet. A `conflict` you keep ignoring is the one that matters
 the day the template changes that file for a reason.
@@ -98,6 +103,10 @@ Pass `--from vX.Y.Z` when you know better than the guess. This matters more than
 it looks: `.sdd/template.lock` has to record what the **template delivered**, not
 what the repository holds now. Get it backwards and every local edit reads as up
 to date, and the next upgrade overwrites it.
+
+Then list under `keep:` every template file `/sdd-init` deleted — `git log
+--diff-filter=D --name-only` finds them — or the first upgrade brings them all
+back.
 
 ## Writes
 

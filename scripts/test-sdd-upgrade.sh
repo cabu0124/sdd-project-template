@@ -193,6 +193,27 @@ grep -Fq '  - docs/commands/thing.md' "$repo/.sdd/template.yml" || fail 'keep: w
 grep -Fq 'echo mine' "$repo/docs/commands/thing.md" || fail 'a kept file was overwritten by --apply'
 ok
 
+# A file the repository deleted on purpose stays deleted: keep: covers absence
+# too, or /sdd-init's deletions come back on every upgrade.
+rm "$repo/scripts/tool.sh"
+printf '  - scripts/tool.sh\n' >> "$repo/.sdd/template.yml"
+output=$(run_upgrade 2>&1) && exit_code=0 || exit_code=$?
+[ "${exit_code:-0}" -eq 0 ] || fail "a deleted, kept file still reported work to do: $output"
+grep -Fq 'kept      scripts/tool.sh' <<< "$output" || fail "the deleted file was not reported as kept: $output"
+grep -Fq 'new       scripts/tool.sh' <<< "$output" && fail 'a deleted, kept file was offered back as new'
+run_upgrade --apply > /dev/null
+[ -e "$repo/scripts/tool.sh" ] && fail 'a deleted, kept file was recreated by --apply'
+ok
+
+# The same for a seeded file.
+rm "$repo/AGENTS.md"
+printf '  - AGENTS.md\n' >> "$repo/.sdd/template.yml"
+output=$(run_upgrade 2>&1) || true
+grep -Fq 'new       AGENTS.md' <<< "$output" && fail 'a deleted, kept seeded file was offered back as new'
+run_upgrade --apply > /dev/null
+[ -e "$repo/AGENTS.md" ] && fail 'a deleted, kept seeded file was recreated by --apply'
+ok
+
 # --- this template's own manifest -------------------------------------------
 #
 # Every versioned file is classified, or a file added later silently reaches
