@@ -85,6 +85,27 @@ Otherwise `001-password-reset` upstream may be `007-password-reset` here. The
 slug is what makes the story greppable across repositories; `spec.link.yml`
 holds the exact mapping, so nothing depends on the numbers matching.
 
+## Reading a wireframe
+
+A spec's `wireframe.html` shows the general idea of how the feature looks and
+behaves: which zones a screen has, what leads, what sits beside it, which states
+exist and how they are told apart. It is a reference, not a blueprint, and never
+the screen's copy.
+
+- **Its words explain; they are not the product's words.** A wireframe carries
+  notes, legends and labels that describe a behaviour or trace a requirement, so
+  a reader understands the intent. The screen says what the spec requires it to
+  say, in the fewest words that do it.
+- **Behaviour is built, not announced.** A requirement that the feature works
+  offline, is never sold, changes nothing else or keeps nothing is met by what
+  the code does. It is stated on screen only where the requirement is itself a
+  statement ("the product states…", "names…", "lists…").
+- **The spec wins, the wireframe guides.** Layout and states are taken from the
+  wireframe unless the implementation has a reason to differ, and the
+  difference is noted in `tasks.md` → Notes. It is not raised upstream: the
+  wireframe did its job as a reference, and the Spec Repository does not change
+  to match one consumer's screen.
+
 ## There is no copy, and that is the design
 
 An earlier arrangement mirrored `spec.md` under `specs/` so it was reviewable in
