@@ -26,6 +26,9 @@ See [preflight.md](preflight.md).
   flag.
 - `AGENTS.md` — conventions, boundaries, and the test and lint commands.
 - The code the task touches, and the tests around it.
+- The spec's `wireframe.html`, when the task builds a screen: a reference for
+  layout, states and behaviour, never its copy. See `docs/spec-repo.md` →
+  Reading a wireframe.
 
 ## Ask only
 
